@@ -6,7 +6,11 @@ const Tally = ({ state, index }) => {
   if (state?.program?.index === index) {
     color = "#ff0000";
   } else if (state?.preview?.index === index) {
-    color = "#00ff00";
+    if (state?.inTransition) {
+      color = "#ff0000";
+    } else {
+      color = "#00ff00";
+    }
   }
 
   return <div style={{ backgroundColor: color }} className={styles.parent} />;
