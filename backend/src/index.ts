@@ -1,3 +1,4 @@
+import { LowerThirdsOptions } from "./types/lowerThirdsOptions";
 import { MediaControlRequest } from "./types/mediaControlRequest.d";
 import { MessageType, EventType } from "./types/enums";
 import { Channel, ChannelStateMessage, Message } from "./types/comm";
@@ -8,6 +9,7 @@ import WebSocket from "ws";
 import config from "../config.json";
 import equal from "deep-equal";
 import express from "express";
+import * as lowerThirds from "./lowerThirds";
 
 const app = express();
 
@@ -20,18 +22,24 @@ const wss = new WebSocket.Server({
 let lastState: ChannelStateMessage;
 let lastMacroState: AtemState["macro"]["macroPlayer"];
 
+let currentLowerThirdsIndex: number = 0;
+let lowerThirdsTexts: LowerThirdsOptions[];
+
+let lowerThirdsUploadedPromise: Promise<void>;
+
 atemConsole.connect(config.atem.ip);
 
 atemConsole.on("stateChanged", (state: AtemState, paths: string[]) => {
-    paths.forEach(path => {
+    paths.forEach(async path => {
         if (path.startsWith("video.ME.0")) {
             const message = getChannelState(state);
             // check if state changed
             if (!equal(lastState, message)) {
                 // check macro
-                if (message.preview.index == 8) {
-                    atemConsole.changePreviewInput(lastState.preview.index);
-                    runMacro(config.lowerThirds.macroIndex);
+                if (message.preview.index === 8) {
+                    await lowerThirdsUploadedPromise;
+                    await atemConsole.changePreviewInput(lastState.preview.index);
+                    await atemConsole.macroRun(config.lowerThirds.macroIndex);
                 } else {
                     // broadcast new state if macro not run
                     broadcastWsMessage(message);
@@ -45,10 +53,12 @@ atemConsole.on("stateChanged", (state: AtemState, paths: string[]) => {
             // has the macrostate changed
             if (!equal(lastMacroState, macroState)) {
                 // Was our macro still running in the last state
-                if (lastMacroState.isRunning && lastMacroState.macroIndex == config.lowerThirds.macroIndex) {
+                if (lastMacroState.isRunning && lastMacroState.macroIndex === config.lowerThirds.macroIndex) {
                     // Is the current running macro not our macro or is the macro player stopped
-                    if (macroState.macroIndex != config.lowerThirds.macroIndex || !macroState.isRunning) {
+                    if (macroState.macroIndex !== config.lowerThirds.macroIndex || !macroState.isRunning) {
                         console.log("Next lower third, macro has ended");
+                        nextLowerThirds();
+                        lowerThirdsUploadedPromise = uploadCurrentLowerThirds();
                     }
                 }
             }
@@ -56,8 +66,18 @@ atemConsole.on("stateChanged", (state: AtemState, paths: string[]) => {
     });
 });
 
-function runMacro(index: number) {
-    atemConsole.macroRun(index);
+function nextLowerThirds() {
+    currentLowerThirdsIndex++;
+}
+
+function setLowerThirds(index: number) {
+    currentLowerThirdsIndex = index;
+}
+
+async function uploadCurrentLowerThirds() {
+    const lowerThirdsOptions = lowerThirdsTexts[currentLowerThirdsIndex];
+    const imageBuffer = await lowerThirds.render(lowerThirdsOptions);
+    await atemConsole.uploadStill(1, imageBuffer, lowerThirdsOptions.title, lowerThirdsOptions.subtitle);
 }
 
 function getChannelState(state: AtemState) {
