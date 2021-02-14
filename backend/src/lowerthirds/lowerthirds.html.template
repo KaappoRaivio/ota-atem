@@ -67,8 +67,8 @@
 
     <body>
         <div id="lowerthirds-container">
-            <p id="lowerthirds-title">${title}</p>
-            <p id="lowerthirds-subtitle">${subtitle}</p>
+            <p id="lowerthirds-title">{{title}}</p>
+            <p id="lowerthirds-subtitle">{{subtitle}}</p>
         </div>
     </body>
 </html>

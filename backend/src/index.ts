@@ -18,6 +18,7 @@ const wss = new WebSocket.Server({
 });
 
 let lastState: ChannelStateMessage;
+let lastMacroState: AtemState["macro"]["macroPlayer"];
 
 atemConsole.connect(config.atem.ip);
 
@@ -36,8 +37,20 @@ atemConsole.on("stateChanged", (state: AtemState, paths: string[]) => {
                     broadcastWsMessage(message);
                     lastState = message;
                 }
-
-                return;
+            }
+        }
+        // has macro ended
+        if (path.startsWith("macro.macroPlayer")) {
+            const macroState = state.macro.macroPlayer;
+            // has the macrostate changed
+            if (!equal(lastMacroState, macroState)) {
+                // Was our macro still running in the last state
+                if (lastMacroState.isRunning && lastMacroState.macroIndex == config.lowerThirds.macroIndex) {
+                    // Is the current running macro not our macro or is the macro player stopped
+                    if (macroState.macroIndex != config.lowerThirds.macroIndex || !macroState.isRunning) {
+                        console.log("Next lower third, macro has ended");
+                    }
+                }
             }
         }
     });
