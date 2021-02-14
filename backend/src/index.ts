@@ -25,14 +25,27 @@ atemConsole.on("stateChanged", (state: AtemState, paths: string[]) => {
   paths.forEach(path => {
     if (path.startsWith("video.ME.0")) {
       const message = getChannelState(state);
+      // check if state changed
       if (!equal(lastState, message)) {
-        broadcastWsMessage(message);
-        lastState = message;
+        // check macro
+        if (message.preview.index == 8){
+          atemConsole.changePreviewInput(lastState.preview.index)
+          runMacro(config.lowerThirds.macroIndex)
+        }else{
+          // broadcast new state if macro not run
+          broadcastWsMessage(message);
+          lastState = message;
+        }
+
         return;
       }
     }
   });
 });
+
+function runMacro(index: number) {
+  atemConsole.macroRun(index)
+}
 
 function getChannelState(state: AtemState) {
   const mixEffect = state.video.mixEffects[0];
