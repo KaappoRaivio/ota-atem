@@ -1,0 +1,36 @@
+.parent {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    font-size: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.content {
+    flex-basis: 50%;
+    width: 50%;
+}
+
+.field {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    margin-bottom: 1vh;
+}
+
+.input {
+    flex: 1 1 0;
+}
+
+.label {
+    flex: 0 0 0;
+    margin-right: 2vw;
+    white-space: nowrap;
+}
+
+button {
+    font-size: 75%;
+}
