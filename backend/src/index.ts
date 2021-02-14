@@ -14,7 +14,7 @@ const app = express();
 const atemConsole = new Atem();
 
 const wss = new WebSocket.Server({
-  port: 7634,
+    port: 7634,
 });
 
 let lastState: ChannelStateMessage;
@@ -23,90 +23,90 @@ let lastMacroState: AtemState["macro"]["macroPlayer"];
 atemConsole.connect(config.atem.ip);
 
 atemConsole.on("stateChanged", (state: AtemState, paths: string[]) => {
-  paths.forEach(path => {
-    if (path.startsWith("video.ME.0")) {
-      const message = getChannelState(state);
-      // check if state changed
-      if (!equal(lastState, message)) {
-        // check macro
-        if (message.preview.index == 8) {
-          atemConsole.changePreviewInput(lastState.preview.index);
-          runMacro(config.lowerThirds.macroIndex);
-        } else {
-          // broadcast new state if macro not run
-          broadcastWsMessage(message);
-          lastState = message;
+    paths.forEach(path => {
+        if (path.startsWith("video.ME.0")) {
+            const message = getChannelState(state);
+            // check if state changed
+            if (!equal(lastState, message)) {
+                // check macro
+                if (message.preview.index == 8) {
+                    atemConsole.changePreviewInput(lastState.preview.index);
+                    runMacro(config.lowerThirds.macroIndex);
+                } else {
+                    // broadcast new state if macro not run
+                    broadcastWsMessage(message);
+                    lastState = message;
+                }
+            }
         }
-      }
-    }
-    // has macro ended
-    if (path.startsWith("macro.macroPlayer")) {
-      const macroState = state.macro.macroPlayer;
-      // has the macrostate changed
-      if (!equal(lastMacroState, macroState)) {
-        // Was our macro still running in the last state
-        if (lastMacroState.isRunning && lastMacroState.macroIndex == config.lowerThirds.macroIndex) {
-          // Is the current running macro not our macro or is the macro player stopped
-          if (macroState.macroIndex != config.lowerThirds.macroIndex || !macroState.isRunning) {
-            console.log("Next lower third, macro has ended");
-          }
+        // has macro ended
+        if (path.startsWith("macro.macroPlayer")) {
+            const macroState = state.macro.macroPlayer;
+            // has the macrostate changed
+            if (!equal(lastMacroState, macroState)) {
+                // Was our macro still running in the last state
+                if (lastMacroState.isRunning && lastMacroState.macroIndex == config.lowerThirds.macroIndex) {
+                    // Is the current running macro not our macro or is the macro player stopped
+                    if (macroState.macroIndex != config.lowerThirds.macroIndex || !macroState.isRunning) {
+                        console.log("Next lower third, macro has ended");
+                    }
+                }
+            }
         }
-      }
-    }
-  });
+    });
 });
 
 function runMacro(index: number) {
-  atemConsole.macroRun(index);
+    atemConsole.macroRun(index);
 }
 
 function getChannelState(state: AtemState) {
-  const mixEffect = state.video.mixEffects[0];
-  const inputChannels = state.inputs;
-  const programChannel = formatAtemInput(inputChannels[mixEffect.programInput]);
-  const previewChannel = formatAtemInput(inputChannels[mixEffect.previewInput]);
+    const mixEffect = state.video.mixEffects[0];
+    const inputChannels = state.inputs;
+    const programChannel = formatAtemInput(inputChannels[mixEffect.programInput]);
+    const previewChannel = formatAtemInput(inputChannels[mixEffect.previewInput]);
 
-  const message = {
-    type: MessageType.Event,
-    event: EventType.ChannelStateChange,
-    program: programChannel,
-    preview: previewChannel,
-    inTransition: mixEffect.transitionPreview,
-  } as ChannelStateMessage;
+    const message = {
+        type: MessageType.Event,
+        event: EventType.ChannelStateChange,
+        program: programChannel,
+        preview: previewChannel,
+        inTransition: mixEffect.transitionPreview,
+    } as ChannelStateMessage;
 
-  return message;
+    return message;
 }
 
 function formatAtemInput(atemChannel: InputChannel) {
-  return {
-    index: atemChannel.inputId,
-    longName: atemChannel.longName,
-    shortName: atemChannel.shortName,
-  } as Channel;
+    return {
+        index: atemChannel.inputId,
+        longName: atemChannel.longName,
+        shortName: atemChannel.shortName,
+    } as Channel;
 }
 
 function broadcastWsMessage(message: Message) {
-  wss.clients.forEach(client => {
-    if (client.readyState === WebSocket.OPEN) {
-      client.send(JSON.stringify(message));
-    }
-  });
+    wss.clients.forEach(client => {
+        if (client.readyState === WebSocket.OPEN) {
+            client.send(JSON.stringify(message));
+        }
+    });
 }
 
 // send message to new clients
 wss.on("connection", (ws: WebSocket) => {
-  ws.send(JSON.stringify(lastState));
+    ws.send(JSON.stringify(lastState));
 });
 
 app.post("/controlMedia", async (req, res) => {
-  if (ValidateMediaControlRequest(req.body)) {
-    const mediaControlRequest: MediaControlRequest = req.body;
-    res.sendStatus(200);
-  } else {
-    res.sendStatus(400);
-  }
+    if (ValidateMediaControlRequest(req.body)) {
+        const mediaControlRequest: MediaControlRequest = req.body;
+        res.sendStatus(200);
+    } else {
+        res.sendStatus(400);
+    }
 });
 
 app.listen(3000, () => {
-  console.log("Listening");
+    console.log("Listening");
 });
