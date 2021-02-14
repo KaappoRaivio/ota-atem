@@ -1,0 +1,14 @@
+{
+  "title": "MediaControlRequest",
+  "type": "object",
+  "properties": {
+    "action": {
+      "enum": ["previous", "next", "set"]
+    },
+    "mediaName": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "required": ["action"]
+}
