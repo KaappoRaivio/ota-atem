@@ -67,11 +67,17 @@ atemConsole.on("stateChanged", (state: AtemState, paths: string[]) => {
 });
 
 function nextLowerThirds() {
-    currentLowerThirdsIndex++;
+    if (currentLowerThirdsIndex + 1 < lowerThirdsTexts.length) {
+        currentLowerThirdsIndex++;
+    } else {
+        currentLowerThirdsIndex = 0;
+    }
 }
 
 function setLowerThirds(index: number) {
-    currentLowerThirdsIndex = index;
+    if (index >= 0 && index < lowerThirdsTexts.length) {
+        currentLowerThirdsIndex = index;
+    }
 }
 
 async function uploadCurrentLowerThirds() {
