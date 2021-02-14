@@ -7,6 +7,7 @@ import { Atem, AtemState } from "atem-connection";
 import { ValidateMediaControlRequest } from "./validators";
 import WebSocket from "ws";
 import config from "../config.json";
+import lowerThirdsTexts from "../lowerthirds.json";
 import equal from "deep-equal";
 import express from "express";
 import * as lowerThirds from "./lowerThirds";
@@ -23,7 +24,6 @@ let lastState: ChannelStateMessage;
 let lastMacroState: AtemState["macro"]["macroPlayer"];
 
 let currentLowerThirdsIndex: number = 0;
-let lowerThirdsTexts: LowerThirdsOptions[];
 
 let lowerThirdsUploadedPromise: Promise<void>;
 
