@@ -1,19 +1,30 @@
 import { LowerThirdsOptions } from "../types/lowerThirdsOptions";
-import nodeHtmlToImage from "node-html-to-image";
+import puppeteer from "puppeteer";
+import Handlebars from "handlebars";
 import fs from "fs";
+import path from "path";
 
-const template = fs.readFileSync("./lowerthirds.html.template", {
+const templateHTML = fs.readFileSync(path.resolve(__dirname, "./lowerthirds.html.template"), {
     encoding: "utf-8",
 });
+const template = Handlebars.compile(templateHTML);
+
 async function render(lowerThirdsOptions: LowerThirdsOptions) {
-    const imageBuffer = await nodeHtmlToImage({
-        html: template,
-        content: {
-            title: lowerThirdsOptions.title,
-            subtitle: lowerThirdsOptions.subtitle,
-        },
+    const compiled = template({
+        title: lowerThirdsOptions.title,
+        subtitle: lowerThirdsOptions.subtitle,
     });
-    return imageBuffer as Buffer;
+    const imageBuffer = takeScreenshot(compiled);
+    if (imageBuffer === undefined) throw new Error("Invalid image buffer");
+    return imageBuffer;
+}
+
+async function takeScreenshot(html: string) {
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+    await page.setContent(html);
+    const buffer = await page.screenshot();
+    return buffer as Buffer;
 }
 
 export { render };
