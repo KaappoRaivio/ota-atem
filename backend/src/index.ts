@@ -10,6 +10,7 @@ import config from "../config.json";
 import lowerThirdsTexts from "../lowerthirds.json";
 import equal from "deep-equal";
 import express from "express";
+import fs from "fs";
 import * as lowerThirds from "./lowerThirds";
 
 const app = express();
@@ -29,16 +30,31 @@ let lowerThirdsUploadedPromise: Promise<void>;
 
 atemConsole.connect(config.atem.ip);
 
+atemConsole.on("error", err => {
+    console.error(err);
+});
+
+atemConsole.on("info", info => {
+    console.log(info);
+});
+
+// init laststate & lastmacrostate
+atemConsole.on("connected", () => {
+    lastState = getChannelState(atemConsole.state);
+    lastMacroState = atemConsole.state.macro.macroPlayer;
+    broadcastWsMessage(lastState);
+});
+
 atemConsole.on("stateChanged", (state: AtemState, paths: string[]) => {
     paths.forEach(async path => {
         if (path.startsWith("video.ME.0")) {
             const message = getChannelState(state);
             // check if state changed
             if (!equal(lastState, message)) {
+                console.log(message);
                 // check macro
                 if (message.preview.index === 8) {
-                    uploadCurrentLowerThirds();
-                    // await lowerThirdsUploadedPromise;
+                    await lowerThirdsUploadedPromise;
                     await atemConsole.changePreviewInput(lastState.preview.index);
                     // await atemConsole.macroRun(config.lowerThirds.macroIndex);
                 } else {
@@ -61,7 +77,7 @@ atemConsole.on("stateChanged", (state: AtemState, paths: string[]) => {
                     if (macroState.macroIndex !== config.lowerThirds.macroIndex || !macroState.isRunning) {
                         console.log("Next lower third, macro has ended");
                         nextLowerThirds();
-                        lowerThirdsUploadedPromise = uploadCurrentLowerThirds();
+                        uploadCurrentLowerThirds();
                     }
                 }
             }
@@ -83,12 +99,15 @@ function setLowerThirds(index: number) {
     }
 }
 
-async function uploadCurrentLowerThirds() {
-    const lowerThirdsOptions = lowerThirdsTexts[currentLowerThirdsIndex];
-    const imageBuffer = await lowerThirds.render(lowerThirdsOptions);
-    console.log("got imagebuffer");
-    console.log(imageBuffer);
-    await atemConsole.uploadStill(1, imageBuffer, lowerThirdsOptions.title, lowerThirdsOptions.subtitle);
+function uploadCurrentLowerThirds() {
+    lowerThirdsUploadedPromise = new Promise<void>(async res => {
+        const lowerThirdsOptions = lowerThirdsTexts[currentLowerThirdsIndex];
+        const imageBuffer = await lowerThirds.render(lowerThirdsOptions);
+        console.log("got imagebuffer");
+        fs.writeFileSync("test.png", imageBuffer);
+        await atemConsole.uploadStill(1, imageBuffer, lowerThirdsOptions.title, lowerThirdsOptions.subtitle);
+        res();
+    });
 }
 
 function getChannelState(state: AtemState) {
@@ -137,6 +156,8 @@ app.post("/controlMedia", async (req, res) => {
         res.sendStatus(400);
     }
 });
+
+uploadCurrentLowerThirds();
 
 app.listen(4000, () => {
     console.log("Listening");

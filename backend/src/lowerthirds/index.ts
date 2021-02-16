@@ -20,7 +20,12 @@ async function render(lowerThirdsOptions: LowerThirdsOptions) {
 }
 
 async function takeScreenshot(html: string) {
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({
+        defaultViewport: {
+            width: 1920,
+            height: 1080,
+        },
+    });
     const page = await browser.newPage();
     await page.setContent(html);
     const buffer = await page.screenshot();
