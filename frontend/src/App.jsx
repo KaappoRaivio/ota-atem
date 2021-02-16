@@ -3,13 +3,11 @@ import React, { useEffect, useState } from "react";
 import styles from "./App.module.css";
 import Tally from "./Tally.jsx";
 
-import sampleState from "samples/channelstate.json";
-
 import { Route, Switch, useLocation, useHistory, Redirect } from "react-router-dom";
 import Welcome from "./Welcome.jsx";
 
 const useCommunication = atemIP => {
-    const [state, setState] = useState(sampleState);
+    const [state, setState] = useState({});
     const [connecting, setConnecting] = useState(true);
     const [error, setError] = useState(null);
 

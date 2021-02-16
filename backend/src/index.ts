@@ -37,9 +37,10 @@ atemConsole.on("stateChanged", (state: AtemState, paths: string[]) => {
             if (!equal(lastState, message)) {
                 // check macro
                 if (message.preview.index === 8) {
-                    await lowerThirdsUploadedPromise;
+                    uploadCurrentLowerThirds();
+                    // await lowerThirdsUploadedPromise;
                     await atemConsole.changePreviewInput(lastState.preview.index);
-                    await atemConsole.macroRun(config.lowerThirds.macroIndex);
+                    // await atemConsole.macroRun(config.lowerThirds.macroIndex);
                 } else {
                     // broadcast new state if macro not run
                     broadcastWsMessage(message);
@@ -50,10 +51,12 @@ atemConsole.on("stateChanged", (state: AtemState, paths: string[]) => {
         // has macro ended
         if (path.startsWith("macro.macroPlayer")) {
             const macroState = state.macro.macroPlayer;
+
+            if (lastMacroState === undefined) lastMacroState = macroState;
             // has the macrostate changed
             if (!equal(lastMacroState, macroState)) {
-                // Was our macro still running in the last state
                 if (lastMacroState.isRunning && lastMacroState.macroIndex === config.lowerThirds.macroIndex) {
+                    // Was our macro still running in the last state
                     // Is the current running macro not our macro or is the macro player stopped
                     if (macroState.macroIndex !== config.lowerThirds.macroIndex || !macroState.isRunning) {
                         console.log("Next lower third, macro has ended");
@@ -83,6 +86,8 @@ function setLowerThirds(index: number) {
 async function uploadCurrentLowerThirds() {
     const lowerThirdsOptions = lowerThirdsTexts[currentLowerThirdsIndex];
     const imageBuffer = await lowerThirds.render(lowerThirdsOptions);
+    console.log("got imagebuffer");
+    console.log(imageBuffer);
     await atemConsole.uploadStill(1, imageBuffer, lowerThirdsOptions.title, lowerThirdsOptions.subtitle);
 }
 
@@ -133,6 +138,6 @@ app.post("/controlMedia", async (req, res) => {
     }
 });
 
-app.listen(3000, () => {
+app.listen(4000, () => {
     console.log("Listening");
 });
