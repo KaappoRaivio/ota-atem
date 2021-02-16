@@ -3,6 +3,7 @@ import puppeteer from "puppeteer";
 import Handlebars from "handlebars";
 import fs from "fs";
 import path from "path";
+import sharp from "sharp";
 
 const templateHTML = fs.readFileSync(path.resolve(__dirname, "./lowerthirds.html.template"), {
     encoding: "utf-8",
@@ -14,8 +15,10 @@ async function render(lowerThirdsOptions: LowerThirdsOptions) {
         title: lowerThirdsOptions.title,
         subtitle: lowerThirdsOptions.subtitle,
     });
-    const imageBuffer = takeScreenshot(compiled);
-    if (imageBuffer === undefined) throw new Error("Invalid image buffer");
+    const pngBuffer = await takeScreenshot(compiled);
+    if (pngBuffer === undefined) throw new Error("Invalid PNG buffer");
+    fs.writeFileSync("test.png", pngBuffer);
+    const imageBuffer = await sharp(pngBuffer).raw().toBuffer();
     return imageBuffer;
 }
 

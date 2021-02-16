@@ -103,8 +103,6 @@ function uploadCurrentLowerThirds() {
     lowerThirdsUploadedPromise = new Promise<void>(async res => {
         const lowerThirdsOptions = lowerThirdsTexts[currentLowerThirdsIndex];
         const imageBuffer = await lowerThirds.render(lowerThirdsOptions);
-        console.log("got imagebuffer");
-        fs.writeFileSync("test.png", imageBuffer);
         await atemConsole.uploadStill(1, imageBuffer, lowerThirdsOptions.title, lowerThirdsOptions.subtitle);
         res();
     });
