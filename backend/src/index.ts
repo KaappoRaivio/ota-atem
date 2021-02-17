@@ -10,7 +10,6 @@ import config from "../config.json";
 import lowerThirdsTexts from "../lowerthirds.json";
 import equal from "deep-equal";
 import express from "express";
-import fs from "fs";
 import * as lowerThirds from "./lowerThirds";
 
 const app = express();
