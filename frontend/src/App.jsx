@@ -46,7 +46,7 @@ const App = props => {
     const [camera, setCamera] = useState(parseInt(params.get("camera")) || 1);
 
     const { connecting, state, error } = useCommunication(serverAddress);
-    const [settingsOpen, setSettingsOpen] = useState(params.get("settingsOpen") === "true");
+    const [settingsOpen, setSettingsOpen] = useState(params.get("settingsOpen") !== "false");
 
     const history = useHistory();
     useEffect(() => {
@@ -65,9 +65,14 @@ const App = props => {
         );
     } else {
         return (
-            <div className={styles.parent}>
-                <Tally state={state} index={camera} />
-            </div>
+            <>
+                <div className={styles.parent}>
+                    <Tally state={state} index={camera} />
+                    <div className={styles.backoverlay}>
+                        <button onDoubleClick={() => setSettingsOpen(true)}>settings</button>
+                    </div>
+                </div>
+            </>
         );
     }
 };
