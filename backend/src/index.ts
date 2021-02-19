@@ -1,112 +1,61 @@
-import { MediaControlRequest } from "./types/mediaControlRequest.d";
-import { MessageType, EventType } from "./types/enums";
-import { Channel, ChannelStateMessage, Message } from "./types/comm";
-import { InputChannel } from "atem-connection/dist/state/input";
-import { Atem, AtemState } from "atem-connection";
-import { ValidateMediaControlRequest } from "./validators";
-import WebSocket from "ws";
+import { MediaControlRequest } from "mediaControlRequest";
+import { Atem } from "atem-connection";
+import { validateMediaControlRequest, validateMediaPreparationRequest } from "./validators";
 import config from "../config.json";
-import equal from "deep-equal";
+import lowerThirdsTexts from "../lowerthirds.json";
 import express from "express";
+import { getLowerThirdsHandlers, LowerThirdsManager } from "./lowerthirds";
+import { getMixEffectHandlers } from "./atem-helpers";
+import { AtemEventDispatcher } from "./atem-eventdispatcher";
+import { MyWebSocketServer } from "./wss";
+import { MediaPreparationRequest } from "mediaPreparationRequest";
+import { LowerThirdsOptions } from "lowerThirdsOptions";
+import bodyParser from "body-parser";
 
 const app = express();
+app.use(bodyParser.json());
+
+const webSocketServer: MyWebSocketServer = new MyWebSocketServer();
 
 const atemConsole = new Atem();
-
-const wss = new WebSocket.Server({
-    port: 7634,
+const atemEventDispatcher: AtemEventDispatcher = new AtemEventDispatcher(atemConsole, {
+    connected: [],
+    error: [],
+    info: [],
+    stateChanged: [],
 });
 
-let lastState: ChannelStateMessage;
-let lastMacroState: AtemState["macro"]["macroPlayer"];
+const lowerThirdsManager: LowerThirdsManager = new LowerThirdsManager(lowerThirdsTexts, atemConsole);
+
+atemEventDispatcher.addHandlers(getMixEffectHandlers(webSocketServer, lowerThirdsManager));
+atemEventDispatcher.addHandlers({ error: [], info: [], stateChanged: [], connected: [() => lowerThirdsManager.setLowerThirdsIndex(0)] });
+atemEventDispatcher.addHandlers(getLowerThirdsHandlers(lowerThirdsManager));
 
 atemConsole.connect(config.atem.ip);
 
-atemConsole.on("stateChanged", (state: AtemState, paths: string[]) => {
-    paths.forEach(path => {
-        if (path.startsWith("video.ME.0")) {
-            const message = getChannelState(state);
-            // check if state changed
-            if (!equal(lastState, message)) {
-                // check macro
-                if (message.preview.index == 8) {
-                    atemConsole.changePreviewInput(lastState.preview.index);
-                    runMacro(config.lowerThirds.macroIndex);
-                } else {
-                    // broadcast new state if macro not run
-                    broadcastWsMessage(message);
-                    lastState = message;
-                }
-            }
-        }
-        // has macro ended
-        if (path.startsWith("macro.macroPlayer")) {
-            const macroState = state.macro.macroPlayer;
-            // has the macrostate changed
-            if (!equal(lastMacroState, macroState)) {
-                // Was our macro still running in the last state
-                if (lastMacroState.isRunning && lastMacroState.macroIndex == config.lowerThirds.macroIndex) {
-                    // Is the current running macro not our macro or is the macro player stopped
-                    if (macroState.macroIndex != config.lowerThirds.macroIndex || !macroState.isRunning) {
-                        console.log("Next lower third, macro has ended");
-                    }
-                }
-            }
-        }
-    });
-});
-
-function runMacro(index: number) {
-    atemConsole.macroRun(index);
-}
-
-function getChannelState(state: AtemState) {
-    const mixEffect = state.video.mixEffects[0];
-    const inputChannels = state.inputs;
-    const programChannel = formatAtemInput(inputChannels[mixEffect.programInput]);
-    const previewChannel = formatAtemInput(inputChannels[mixEffect.previewInput]);
-
-    const message = {
-        type: MessageType.Event,
-        event: EventType.ChannelStateChange,
-        program: programChannel,
-        preview: previewChannel,
-        inTransition: mixEffect.transitionPreview,
-    } as ChannelStateMessage;
-
-    return message;
-}
-
-function formatAtemInput(atemChannel: InputChannel) {
-    return {
-        index: atemChannel.inputId,
-        longName: atemChannel.longName,
-        shortName: atemChannel.shortName,
-    } as Channel;
-}
-
-function broadcastWsMessage(message: Message) {
-    wss.clients.forEach(client => {
-        if (client.readyState === WebSocket.OPEN) {
-            client.send(JSON.stringify(message));
-        }
-    });
-}
-
-// send message to new clients
-wss.on("connection", (ws: WebSocket) => {
-    ws.send(JSON.stringify(lastState));
-});
-
 app.post("/controlMedia", async (req, res) => {
-    if (ValidateMediaControlRequest(req.body)) {
+    if (validateMediaControlRequest(req.body)) {
         const mediaControlRequest: MediaControlRequest = req.body;
+        const { action } = mediaControlRequest;
         res.sendStatus(200);
     } else {
         res.sendStatus(400);
     }
 });
 
-app.listen(3000, () => {
+app.post("/prepareLowerThirds", async (req, res) => {
+    console.log("request");
+    // console.log(req.body);
+    if (validateMediaPreparationRequest(req.body)) {
+        res.sendStatus(200);
+        const mediaPreparationRequest: LowerThirdsOptions[] = req.body.lowerThirdsList;
+        console.log(mediaPreparationRequest);
+        lowerThirdsManager.setLowerThirds(mediaPreparationRequest);
+    } else {
+        res.sendStatus(400);
+    }
+});
+
+app.listen(4000, () => {
     console.log("Listening");
 });

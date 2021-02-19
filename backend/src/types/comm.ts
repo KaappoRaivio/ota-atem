@@ -1,4 +1,4 @@
-import { SubscriptionAction, MessageType, EventType } from "./enums";
+import { SubscriptionAction, MessageType, EventType, AtemEvent } from "enums";
 
 export interface Message {
     type: MessageType;
@@ -26,3 +26,5 @@ export interface ChannelStateMessage extends Message {
     preview: Channel;
     inTransition: boolean;
 }
+
+export type AtemEventHandlers = { [key in keyof typeof AtemEvent]: Function[] };
