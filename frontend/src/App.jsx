@@ -18,7 +18,6 @@ const useCommunication = atemIP => {
             try {
                 const socket = new WebSocket(`ws://${atemIP}:7634/`);
                 socket.onmessage = event => {
-                    console.log(event.data);
                     if (connecting) {
                         setConnecting(false);
                     }
@@ -32,10 +31,6 @@ const useCommunication = atemIP => {
 
         initializeSocket();
     }, [atemIP]);
-
-    useEffect(() => {
-        console.log(state);
-    }, [state]);
 
     return { connecting, state, error };
 };

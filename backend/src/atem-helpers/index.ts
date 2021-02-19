@@ -13,12 +13,14 @@ function getChannelState(state: AtemState) {
     const programChannel = formatAtemInput(inputChannels[mixEffect.programInput]);
     const previewChannel = formatAtemInput(inputChannels[mixEffect.previewInput]);
 
+    // console.log(mixEffect);
+
     return {
         type: MessageType.Event,
         event: EventType.ChannelStateChange,
         program: programChannel,
         preview: previewChannel,
-        inTransition: mixEffect.transitionPreview,
+        inTransition: mixEffect.transitionPosition.inTransition,
     } as ChannelStateMessage;
 }
 

@@ -1,5 +1,5 @@
 import { MediaControlRequest } from "mediaControlRequest";
-import { Atem } from "atem-connection";
+import { Atem, AtemState } from "atem-connection";
 import { validateMediaControlRequest, validateMediaPreparationRequest } from "./validators";
 import config from "../config.json";
 import lowerThirdsTexts from "../lowerthirds.json";
@@ -11,6 +11,7 @@ import { MyWebSocketServer } from "./wss";
 import { MediaPreparationRequest } from "mediaPreparationRequest";
 import { LowerThirdsOptions } from "lowerThirdsOptions";
 import bodyParser from "body-parser";
+import { AtemEvent } from "enums";
 
 const app = express();
 app.use(bodyParser.json());
@@ -22,7 +23,11 @@ const atemEventDispatcher: AtemEventDispatcher = new AtemEventDispatcher(atemCon
     connected: [],
     error: [],
     info: [],
-    stateChanged: [],
+    stateChanged: [
+        (atemConsole: Atem, eventType: AtemEvent, state: AtemState, paths: string[]) => {
+            console.log(paths);
+        },
+    ],
 });
 
 const lowerThirdsManager: LowerThirdsManager = new LowerThirdsManager(lowerThirdsTexts, atemConsole);
