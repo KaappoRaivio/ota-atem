@@ -51,9 +51,9 @@ atemConsole.on("stateChanged", (state: AtemState, paths: string[]) => {
             const message = getChannelState(state);
             // check if state changed
             if (!equal(lastState, message)) {
-                console.log(message);
                 // check macro
                 if (message.preview.index === 8) {
+                    console.log("Macro key pressed");
                     await lowerThirdsUploadedPromise;
                     await atemConsole.changePreviewInput(lastState.preview.index);
                     await atemConsole.macroRun(config.lowerThirds.macroIndex);
