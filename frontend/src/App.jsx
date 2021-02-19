@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import styles from "./App.module.css";
 import Tally from "./Tally.jsx";
 
-import { Route, Switch, useLocation, useHistory, Redirect } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import Welcome from "./Welcome.jsx";
 
 const useCommunication = atemIP => {
@@ -14,19 +14,23 @@ const useCommunication = atemIP => {
     useEffect(() => {
         console.log(atemIP);
 
-        try {
-            const socket = new WebSocket(`ws://${atemIP}:7634/`);
-            socket.onmessage = event => {
-                console.log(event.data);
-                if (connecting) {
-                    setConnecting(false);
-                }
-                setState(JSON.parse(event.data));
-            };
-            socket.onerror = setError;
-        } catch (err) {
-            setError(err);
-        }
+        const initializeSocket = () => {
+            try {
+                const socket = new WebSocket(`ws://${atemIP}:7634/`);
+                socket.onmessage = event => {
+                    console.log(event.data);
+                    if (connecting) {
+                        setConnecting(false);
+                    }
+                    setState(JSON.parse(event.data));
+                };
+                socket.onerror = setError;
+            } catch (err) {
+                setTimeout(initializeSocket, 100);
+            }
+        };
+
+        initializeSocket();
     }, [atemIP]);
 
     useEffect(() => {
@@ -43,26 +47,23 @@ const useQuery = () => {
 const App = props => {
     const params = useQuery();
 
-    const [serverAddress, setServerAddress] = useState(params.get("serverAddress") || "192.168.10.101");
-    const [camera, setCamera] = useState(parseInt(params.get("camera")) || 0);
+    const [serverAddress, setServerAddress] = useState(params.get("serverAddress") || window.location.hostname);
+    const [camera, setCamera] = useState(parseInt(params.get("camera")) || 1);
 
     const { connecting, state, error } = useCommunication(serverAddress);
-
-    console.log(serverAddress, camera);
-    const [settingsOpen, setSettingsOpen] = useState(params.get("serverAddress") == null || params.get("camera") == null);
+    const [settingsOpen, setSettingsOpen] = useState(params.get("settingsOpen") === "true");
 
     const history = useHistory();
     useEffect(() => {
-        history.push(`?camera=${camera}&serverAddress=${serverAddress}`);
-    }, [camera, serverAddress]);
-
+        history.push(`?camera=${camera}&serverAddress=${serverAddress}&settingsOpen=${settingsOpen}`);
+    }, [camera, serverAddress, settingsOpen]);
     if (settingsOpen) {
         return (
             <Welcome
                 initialValues={{ serverAddress, camera }}
                 onSubmit={({ serverAddress, camera }) => {
                     setServerAddress(serverAddress);
-                    setCamera(camera);
+                    setCamera(parseInt(camera));
                     setSettingsOpen(false);
                 }}
             />

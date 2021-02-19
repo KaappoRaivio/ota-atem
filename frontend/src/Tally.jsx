@@ -2,6 +2,7 @@ import React from "react";
 import styles from "./Tally.module.css";
 
 const Tally = ({ state, index }) => {
+    console.log(state?.preview, index);
     let color = "black";
     if (state?.program?.index === index) {
         color = "#ff0000";

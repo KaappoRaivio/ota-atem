@@ -33,6 +33,7 @@ const Welcome = ({ onSubmit, initialValues }) => {
                     <div className={styles.field} key={field.technicalLabel}>
                         <span className={styles.label}>{field.label}</span>
                         <input
+                            defaultValue={formState[field.technicalLabel]}
                             className={styles.input}
                             type={field.type}
                             onChange={event => {
