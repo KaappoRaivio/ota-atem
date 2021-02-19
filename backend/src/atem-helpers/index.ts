@@ -59,31 +59,10 @@ const getMixEffectHandlers = (webSocketServer: MyWebSocketServer, lowerThirdsMan
             }
         });
     };
-    let lastMacroIndex: number = -1;
-    const handleMacros = (atemConsole: Atem, eventType: AtemEvent, state: AtemState, paths: string[]) => {
-        paths.forEach(async path => {
-            if (path.startsWith("macro.macroPlayer")) {
-                console.log(path);
-                const macroState = state.macro.macroPlayer;
-                const { macroIndex, isRunning } = macroState;
-                console.log(macroState);
 
-                if (macroIndex === config.lowerThirds.macroIndex && isRunning) {
-                    console.log("Macro started");
-                    console.log("-----------------------------------------------");
-                    lastMacroIndex = macroIndex;
-                } else if (lastMacroIndex === config.lowerThirds.macroIndex && !isRunning) {
-                    lastMacroIndex = -1;
-                    console.log("Macro ended");
-
-                    lowerThirdsManager.nextLowerThirds();
-                }
-            }
-        });
-    };
     return {
         connected: [onAtemConnected],
-        stateChanged: [handleMixEffectKeyPresses, handleMacros],
+        stateChanged: [handleMixEffectKeyPresses],
         info: [],
         error: [],
     } as AtemEventHandlers;

@@ -6,8 +6,10 @@ import path from "path";
 import sharp from "sharp";
 import config from "../../config.json";
 
-import { Atem } from "atem-connection";
-import lowerThirdsTexts from "../../lowerthirds.json";
+import { Atem, AtemState } from "atem-connection";
+import { AtemEvent } from "enums";
+import { AtemEventHandlers } from "comm";
+import { MediaPreparationRequest } from "mediaPreparationRequest";
 
 const templateHTML = fs.readFileSync(path.resolve(__dirname, "./lowerthirds.html.template"), {
     encoding: "utf-8",
@@ -21,8 +23,8 @@ async function render(lowerThirdsOptions: LowerThirdsOptions) {
     });
     const pngBuffer = await takeScreenshot(compiled);
     if (pngBuffer === undefined) throw new Error("Invalid PNG buffer");
-    const imageBuffer = await sharp(pngBuffer).ensureAlpha().raw().toBuffer(); // convert to RGBA buffer
-    return imageBuffer;
+    // convert to RGBA buffer
+    return await sharp(pngBuffer).ensureAlpha().raw().toBuffer();
 }
 
 async function takeScreenshot(html: string) {
@@ -35,6 +37,7 @@ async function takeScreenshot(html: string) {
     const page = await browser.newPage();
     await page.setContent(html);
     const buffer = await page.screenshot();
+    await browser.close();
     return buffer as Buffer;
 }
 
@@ -63,13 +66,53 @@ class LowerThirdsManager {
     private prepareNextLowerThirds() {
         const lowerThirdsUploadedPromise = new Promise<void>(resolve => {
             const inner = async () => {
-                const lowerThirdsOptions = lowerThirdsTexts[this.currentTextIndex];
+                const lowerThirdsOptions = this.lowerThirdsData[this.currentTextIndex];
                 const imageBuffer = await render(lowerThirdsOptions);
                 await this.atemConsole.uploadStill(config.lowerThirds.mediaIndex, imageBuffer, lowerThirdsOptions.title, lowerThirdsOptions.subtitle);
+                console.log("Updloaded");
             };
-            inner().then(resolve);
+            inner().then(resolve).catch(console.error);
         });
+    }
+
+    setLowerThirds(lowerThirdsData: LowerThirdsOptions[]): void {
+        console.log(this.lowerThirdsData);
+        this.lowerThirdsData = lowerThirdsData;
+        console.log(this.lowerThirdsData);
+        this.setLowerThirdsIndex(0);
     }
 }
 
-export { LowerThirdsManager };
+const getLowerThirdsHandlers = (lowerThirdsManager: LowerThirdsManager): AtemEventHandlers => {
+    let lastMacroIndex: number = -1;
+    const handleMacros = (atemConsole: Atem, eventType: AtemEvent, state: AtemState, paths: string[]) => {
+        paths.forEach(async path => {
+            if (path.startsWith("macro.macroPlayer")) {
+                console.log(path);
+                const macroState = state.macro.macroPlayer;
+                const { macroIndex, isRunning } = macroState;
+                console.log(macroState);
+
+                if (macroIndex === config.lowerThirds.macroIndex && isRunning) {
+                    console.log("Macro started");
+                    console.log("-----------------------------------------------");
+                    lastMacroIndex = macroIndex;
+                } else if (lastMacroIndex === config.lowerThirds.macroIndex && !isRunning) {
+                    lastMacroIndex = -1;
+                    console.log("Macro ended");
+
+                    lowerThirdsManager.nextLowerThirds();
+                }
+            }
+        });
+    };
+
+    return {
+        connected: [],
+        stateChanged: [handleMacros],
+        error: [],
+        info: [],
+    } as AtemEventHandlers;
+};
+
+export { LowerThirdsManager, getLowerThirdsHandlers };

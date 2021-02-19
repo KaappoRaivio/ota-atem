@@ -12,7 +12,9 @@
           },"subtitle": {
             "type": "string"
           }
-        }
+        },
+        "additionalProperties": false,
+        "required": ["title", "subtitle"]
       }
     }
   },
