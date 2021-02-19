@@ -41,6 +41,7 @@ atemConsole.on("info", info => {
 atemConsole.on("connected", () => {
     lastState = getChannelState(atemConsole.state);
     lastMacroState = atemConsole.state.macro.macroPlayer;
+    uploadCurrentLowerThirds();
     broadcastWsMessage(lastState);
 });
 
