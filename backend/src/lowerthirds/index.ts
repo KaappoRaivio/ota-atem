@@ -4,6 +4,10 @@ import Handlebars from "handlebars";
 import fs from "fs";
 import path from "path";
 import sharp from "sharp";
+import config from "../../config.json";
+
+import { Atem } from "atem-connection";
+import lowerThirdsTexts from "../../lowerthirds.json";
 
 const templateHTML = fs.readFileSync(path.resolve(__dirname, "./lowerthirds.html.template"), {
     encoding: "utf-8",
@@ -34,4 +38,38 @@ async function takeScreenshot(html: string) {
     return buffer as Buffer;
 }
 
-export { render };
+class LowerThirdsManager {
+    private lowerThirdsData: LowerThirdsOptions[];
+    private currentTextIndex: number;
+    private atemConsole: Atem;
+
+    constructor(lowerThirdsData: LowerThirdsOptions[], atemConsole: Atem) {
+        this.lowerThirdsData = lowerThirdsData;
+        this.currentTextIndex = 0;
+        this.atemConsole = atemConsole;
+    }
+
+    public nextLowerThirds(): void {
+        console.log("Next lower thirds");
+        this.currentTextIndex = (this.currentTextIndex + 1) % this.lowerThirdsData.length;
+        this.prepareNextLowerThirds();
+    }
+
+    public setLowerThirdsIndex(index: number): void {
+        this.currentTextIndex = index % this.lowerThirdsData.length;
+        this.prepareNextLowerThirds();
+    }
+
+    private prepareNextLowerThirds() {
+        const lowerThirdsUploadedPromise = new Promise<void>(resolve => {
+            const inner = async () => {
+                const lowerThirdsOptions = lowerThirdsTexts[this.currentTextIndex];
+                const imageBuffer = await render(lowerThirdsOptions);
+                await this.atemConsole.uploadStill(config.lowerThirds.mediaIndex, imageBuffer, lowerThirdsOptions.title, lowerThirdsOptions.subtitle);
+            };
+            inner().then(resolve);
+        });
+    }
+}
+
+export { LowerThirdsManager };

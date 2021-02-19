@@ -11,3 +11,10 @@ export enum SubscriptionAction {
 export enum EventType {
     ChannelStateChange,
 }
+
+export enum AtemEvent {
+    stateChanged = "stateChanged",
+    connected = "connected",
+    error = "error",
+    info = "info",
+}
