@@ -47,13 +47,22 @@ const getMixEffectHandlers = (webSocketServer: MyWebSocketServer, lowerThirdsMan
                 const currentChannelState = getChannelState(state);
 
                 if (!equal(lastChannelState, currentChannelState)) {
+                    if (currentChannelState.preview.index !== config.lowerThirds.previewKeyIndex) {
+                        webSocketServer.broadcastWsMessage(currentChannelState);
+                        lastChannelState = currentChannelState;
+                    }
+                }
+            }
+        });
+        paths.forEach(async path => {
+            if (path.startsWith("video.ME.0")) {
+                const currentChannelState = getChannelState(state);
+
+                if (!equal(lastChannelState, currentChannelState)) {
                     if (currentChannelState.preview.index === config.lowerThirds.previewKeyIndex) {
                         console.log("Macro key pressed");
                         await atemConsole.changePreviewInput(lastChannelState.preview.index);
                         await atemConsole.macroRun(config.lowerThirds.macroIndex);
-                    } else {
-                        webSocketServer.broadcastWsMessage(currentChannelState);
-                        lastChannelState = currentChannelState;
                     }
                 }
             }
