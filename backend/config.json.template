@@ -3,6 +3,7 @@
         "ip": "192.168.1.240"
     },
     "lowerThirds": {
-        "macroIndex": 0
+        "macroIndex": 0,
+        "mediaIndex": 1
     }
 }

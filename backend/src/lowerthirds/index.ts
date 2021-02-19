@@ -18,7 +18,7 @@ async function render(lowerThirdsOptions: LowerThirdsOptions) {
     const pngBuffer = await takeScreenshot(compiled);
     if (pngBuffer === undefined) throw new Error("Invalid PNG buffer");
     fs.writeFileSync("test.png", pngBuffer);
-    const imageBuffer = await sharp(pngBuffer).raw().toBuffer();
+    const imageBuffer = await sharp(pngBuffer).ensureAlpha().raw().toBuffer(); // convert to RGBA buffer
     return imageBuffer;
 }
 
