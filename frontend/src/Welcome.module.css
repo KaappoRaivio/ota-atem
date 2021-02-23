@@ -11,6 +11,15 @@
 .content {
     flex-basis: 50%;
     width: 50%;
+    left: 25%;
+    position: absolute;
+}
+
+@media screen and (max-width: 600px) {
+    .content {
+        left: 0;
+        width: 100%;
+    }
 }
 
 .field {
@@ -23,10 +32,11 @@
 
 .input {
     flex: 1 1 0;
+    min-width: 0 !important;
 }
 
 .label {
-    flex: 0 0 0;
+    flex: 0 2 0;
     margin-right: 2vw;
     white-space: nowrap;
 }
