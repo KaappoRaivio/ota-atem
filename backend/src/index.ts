@@ -23,17 +23,12 @@ const atemEventDispatcher: AtemEventDispatcher = new AtemEventDispatcher(atemCon
     connected: [],
     error: [],
     info: [],
-    stateChanged: [
-        (atemConsole: Atem, eventType: AtemEvent, state: AtemState, paths: string[]) => {
-            console.log(paths);
-        },
-    ],
+    stateChanged: [],
 });
 
 const lowerThirdsManager: LowerThirdsManager = new LowerThirdsManager(lowerThirdsTexts, atemConsole);
 
 atemEventDispatcher.addHandlers(getMixEffectHandlers(webSocketServer, lowerThirdsManager));
-atemEventDispatcher.addHandlers({ error: [], info: [], stateChanged: [], connected: [() => lowerThirdsManager.setLowerThirdsIndex(0)] });
 atemEventDispatcher.addHandlers(getLowerThirdsHandlers(lowerThirdsManager));
 
 atemConsole.connect(config.atem.ip);

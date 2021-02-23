@@ -5,9 +5,24 @@
     align-items: center;
     justify-content: center;
     font-size: 600%;
+
 }
 
 .text {
     /*filter: saturate(0%) invert() brightness(0.5) ;*/
     color: gray;
+}
+
+@keyframes _blink {
+    0% {
+        filter: brightness(0%);
+    }
+
+    25% {
+        filter: brightness(100%);
+    }
+}
+
+.blink {
+    animation: _blink 1s steps(2, start) infinite;
 }

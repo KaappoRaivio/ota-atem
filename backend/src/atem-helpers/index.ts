@@ -13,8 +13,6 @@ function getChannelState(state: AtemState) {
     const programChannel = formatAtemInput(inputChannels[mixEffect.programInput]);
     const previewChannel = formatAtemInput(inputChannels[mixEffect.previewInput]);
 
-    // console.log(mixEffect);
-
     return {
         type: MessageType.Event,
         event: EventType.ChannelStateChange,
@@ -37,7 +35,7 @@ const getMixEffectHandlers = (webSocketServer: MyWebSocketServer, lowerThirdsMan
     let lastMacroState: AtemState["macro"]["macroPlayer"];
 
     const onAtemConnected = (atemConsole: Atem) => {
-        console.log("Works!");
+        console.log("Atem connected");
         lastChannelState = getChannelState(atemConsole.state);
         lastMacroState = atemConsole.state.macro.macroPlayer;
         webSocketServer.broadcastWsMessage(lastChannelState);

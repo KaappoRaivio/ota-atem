@@ -10,6 +10,7 @@ import { Atem, AtemState } from "atem-connection";
 import { AtemEvent } from "enums";
 import { AtemEventHandlers } from "comm";
 import { MediaPreparationRequest } from "mediaPreparationRequest";
+import { TransferState } from "atem-connection/dist/enums";
 
 const templateHTML = fs.readFileSync(path.resolve(__dirname, "./lowerthirds.html.template"), {
     encoding: "utf-8",
@@ -68,8 +69,13 @@ class LowerThirdsManager {
             const inner = async () => {
                 const lowerThirdsOptions = this.lowerThirdsData[this.currentTextIndex];
                 const imageBuffer = await render(lowerThirdsOptions);
-                await this.atemConsole.uploadStill(config.lowerThirds.mediaIndex, imageBuffer, lowerThirdsOptions.title, lowerThirdsOptions.subtitle);
-                console.log("Updloaded");
+                const result = await this.atemConsole.uploadStill(
+                    config.lowerThirds.mediaIndex,
+                    imageBuffer,
+                    lowerThirdsOptions.title,
+                    lowerThirdsOptions.subtitle
+                );
+                console.log(result.state === TransferState.Finished);
             };
             inner().then(resolve).catch(console.error);
         });
@@ -108,7 +114,7 @@ const getLowerThirdsHandlers = (lowerThirdsManager: LowerThirdsManager): AtemEve
     };
 
     return {
-        connected: [],
+        connected: [() => lowerThirdsManager.setLowerThirdsIndex(0)],
         stateChanged: [handleMacros],
         error: [],
         info: [],
