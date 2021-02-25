@@ -43,31 +43,34 @@ async function takeScreenshot(html: string) {
 }
 
 class LowerThirdsManager {
-    private lowerThirdsData: LowerThirdsOptions[];
+    get lowerThirdsData(): LowerThirdsOptions[] {
+        return this._lowerThirdsData;
+    }
+    private _lowerThirdsData: LowerThirdsOptions[];
     private currentTextIndex: number;
     private atemConsole: Atem;
 
     constructor(lowerThirdsData: LowerThirdsOptions[], atemConsole: Atem) {
-        this.lowerThirdsData = lowerThirdsData;
+        this._lowerThirdsData = lowerThirdsData;
         this.currentTextIndex = 0;
         this.atemConsole = atemConsole;
     }
 
     public nextLowerThirds(): void {
         console.log("Next lower thirds");
-        this.currentTextIndex = (this.currentTextIndex + 1) % this.lowerThirdsData.length;
+        this.currentTextIndex = (this.currentTextIndex + 1) % this._lowerThirdsData.length;
         this.prepareNextLowerThirds();
     }
 
     public setLowerThirdsIndex(index: number): void {
-        this.currentTextIndex = index % this.lowerThirdsData.length;
+        this.currentTextIndex = index % this._lowerThirdsData.length;
         this.prepareNextLowerThirds();
     }
 
     private prepareNextLowerThirds() {
         const lowerThirdsUploadedPromise = new Promise<void>(resolve => {
             const inner = async () => {
-                const lowerThirdsOptions = this.lowerThirdsData[this.currentTextIndex];
+                const lowerThirdsOptions = this._lowerThirdsData[this.currentTextIndex];
                 const imageBuffer = await render(lowerThirdsOptions);
                 const result = await this.atemConsole.uploadStill(
                     config.lowerThirds.mediaIndex,
@@ -82,9 +85,9 @@ class LowerThirdsManager {
     }
 
     setLowerThirds(lowerThirdsData: LowerThirdsOptions[]): void {
-        console.log(this.lowerThirdsData);
-        this.lowerThirdsData = lowerThirdsData;
-        console.log(this.lowerThirdsData);
+        console.log(this._lowerThirdsData);
+        this._lowerThirdsData = lowerThirdsData;
+        console.log(this._lowerThirdsData);
         this.setLowerThirdsIndex(0);
     }
 }

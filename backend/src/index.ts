@@ -13,8 +13,11 @@ import { LowerThirdsOptions } from "lowerThirdsOptions";
 import bodyParser from "body-parser";
 import { AtemEvent } from "enums";
 
+import cors from "cors";
+
 const app = express();
 app.use(bodyParser.json());
+app.use(cors());
 
 const webSocketServer: MyWebSocketServer = new MyWebSocketServer();
 
@@ -45,7 +48,6 @@ app.post("/controlMedia", async (req, res) => {
 
 app.post("/prepareLowerThirds", async (req, res) => {
     console.log("request");
-    // console.log(req.body);
     if (validateMediaPreparationRequest(req.body)) {
         res.sendStatus(200);
         const mediaPreparationRequest: LowerThirdsOptions[] = req.body.lowerThirdsList;
@@ -54,6 +56,10 @@ app.post("/prepareLowerThirds", async (req, res) => {
     } else {
         res.sendStatus(400);
     }
+});
+
+app.get("/getLowerThirds", async (req, res) => {
+    res.status(200).json(lowerThirdsManager.lowerThirdsData);
 });
 
 app.listen(4000, () => {

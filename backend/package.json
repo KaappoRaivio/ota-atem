@@ -8,6 +8,7 @@
   "dependencies": {
     "ajv": "^7.1.0",
     "atem-connection": "^2.1.0",
+    "cors": "^2.8.5",
     "deep-equal": "^2.0.5",
     "express": "^4.17.1",
     "handlebars": "^4.7.7",
