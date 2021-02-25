@@ -5,15 +5,16 @@
     "author": "Juuso Laine",
     "license": "MIT",
     "dependencies": {
+        "@types/cors": "^2.8.10",
         "ajv": "^7.1.0",
         "atem-connection": "^2.1.0",
+        "cors": "^2.8.5",
         "deep-equal": "^2.0.5",
         "express": "^4.17.1",
         "handlebars": "^4.7.7",
         "puppeteer": "^7.1.0",
         "sharp": "^0.27.1",
-      "cors": "^2.8.5",
-      "ws": "^7.4.3"
+        "ws": "^7.4.3"
     },
     "devDependencies": {
         "@types/deep-equal": "^1.0.1",
