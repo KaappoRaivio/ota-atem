@@ -21,7 +21,13 @@ const useCommunication = atemIP => {
                 console.log("Created");
                 socket.onmessage = event => {
                     console.log(event.data);
-                    setState(JSON.parse(event.data));
+                    let json;
+                    try {
+                        json = JSON.parse(event.data);
+                        setState(json);
+                    } catch (err) {
+                        console.log("Couldn't parse: ", event.data);
+                    }
                 };
                 socket.onerror = e => {
                     console.log("Socket error!");
@@ -64,7 +70,7 @@ const App = props => {
 
     const history = useHistory();
     useEffect(() => {
-        history.push(`?camera=${camera}&serverAddress=${serverAddress}&settingsOpen=${settingsOpen}`);
+        history.push(`/tally?camera=${camera}&serverAddress=${serverAddress}&settingsOpen=${settingsOpen}`);
     }, [camera, serverAddress, settingsOpen]);
 
     useEffect(() => {

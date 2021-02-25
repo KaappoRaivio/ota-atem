@@ -9,7 +9,7 @@
 }
 
 .content {
-    flex-basis: 50%;
+    /*flex-basis: 50%;*/
     width: 50%;
     left: 25%;
     position: absolute;
