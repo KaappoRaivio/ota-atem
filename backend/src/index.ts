@@ -14,6 +14,7 @@ import bodyParser from "body-parser";
 import { AtemEvent } from "enums";
 
 import cors from "cors";
+import path from "path";
 
 const app = express();
 app.use(bodyParser.json());
@@ -62,6 +63,19 @@ app.get("/getLowerThirds", async (req, res) => {
     res.status(200).json(lowerThirdsManager.lowerThirdsData);
 });
 
-app.listen(4000, () => {
-    console.log("Listening");
+export const IS_DEVELOPMENT_ENVIRONMENT = !process.env.NODE_ENV || process.env.NODE_ENV === "development";
+console.log(IS_DEVELOPMENT_ENVIRONMENT);
+if (!IS_DEVELOPMENT_ENVIRONMENT) {
+    console.log("Mounting front-end");
+    console.log(__dirname);
+    app.use(express.static(path.join(__dirname, "../../../frontend/build")));
+    app.get("*", (req, res) => {
+        res.sendFile(path.join(__dirname, "../../../frontend/build/index.html"));
+    });
+}
+
+const port = process.env.PORT || IS_DEVELOPMENT_ENVIRONMENT ? 4000 : 80;
+
+app.listen(port, () => {
+    console.log("Started ota-atem-server");
 });

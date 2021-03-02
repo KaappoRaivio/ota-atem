@@ -1,0 +1,30 @@
+{
+    "compilerOptions": {
+        "sourceMap": true,
+        "esModuleInterop": true,
+        "allowJs": true,
+        "noImplicitAny": true,
+        "moduleResolution": "node",
+        "resolveJsonModule": true,
+        "lib": ["es2018", "dom"],
+        "module": "commonjs",
+        "target": "es2018",
+        "baseUrl": ".",
+        "paths": {
+            "@backend/": [
+                "./backend/src/*"
+            ],
+            "*": ["node_modules/*", "src/types/*", "backend/"]
+        },
+        "typeRoots": ["backend/node_modules/@types", "./backend/src/types"],
+        "outDir": "./built"
+    },
+    "references": [
+        {
+            "path": "./backend"
+        }
+    ],
+    "include": ["./backend/**/*"],
+    "exclude": ["node_modules"],
+
+}

@@ -33,6 +33,6 @@
         "prebuild": "json2ts -i src/schemas/ -o src/types/",
         "dev": "yarn prebuild && ts-node-dev --respawn --transpile-only ./src/index.ts",
         "build": "tsc && yarn copy-statics",
-        "prod": "yarn build && node ./built/src/index.js"
+        "prod": "yarn build && cd ../frontend && yarn build && cd ../backend && NODE_ENV=production node ./built/src/index.js"
     }
 }
