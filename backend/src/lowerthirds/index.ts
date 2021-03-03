@@ -8,9 +8,11 @@ import config from "../../config.json";
 
 import { Atem, AtemState } from "atem-connection";
 import { AtemEvent } from "enums";
-import { AtemEventHandlers } from "comm";
+import { AtemEventHandlers, MediaStateMessage } from "comm";
 import { MediaPreparationRequest } from "mediaPreparationRequest";
 import { TransferState } from "atem-connection/dist/enums";
+import { MyWebSocketServer } from "../wss";
+import { send } from "process";
 
 async function render(lowerThirdsOptions: LowerThirdsOptions) {
     const templateHTML = fs.readFileSync(path.resolve(__dirname, lowerThirdsOptions.templateFile), {
@@ -62,6 +64,7 @@ class LowerThirdsManager {
     private _lowerThirdsData: LowerThirdsOptions[];
     private currentTextIndex: number;
     private atemConsole: Atem;
+    public webSocketServer: MyWebSocketServer;
 
     constructor(lowerThirdsData: LowerThirdsOptions[], atemConsole: Atem) {
         this._lowerThirdsData = lowerThirdsData;
@@ -69,15 +72,33 @@ class LowerThirdsManager {
         this.atemConsole = atemConsole;
     }
 
+    public sendMediaWS() {
+        const index = this.getLowerThirdsIndex();
+        const data = this.lowerThirdsData[index];
+        const msg = {
+            type: "media",
+            currentIndex: index,
+            currentValues: {
+                title: data.texts.title,
+                subtitle: data.texts.subtitle,
+            },
+        } as MediaStateMessage;
+        console.log(msg);
+        this.webSocketServer.broadcastWsMessage(msg);
+        this.webSocketServer.setMediaState(msg);
+    }
+
     public nextLowerThirds(): void {
         console.log("Next lower thirds");
         this.currentTextIndex = (this.currentTextIndex + 1) % this._lowerThirdsData.length;
         this.prepareNextLowerThirds();
+        this.sendMediaWS();
     }
 
     public setLowerThirdsIndex(index: number): void {
         this.currentTextIndex = index % this._lowerThirdsData.length;
         this.prepareNextLowerThirds();
+        this.sendMediaWS();
     }
 
     public getLowerThirdsIndex(): number {
@@ -104,9 +125,10 @@ class LowerThirdsManager {
     }
 }
 
-const getLowerThirdsHandlers = (lowerThirdsManager: LowerThirdsManager): AtemEventHandlers => {
+const getLowerThirdsHandlers = (webSocketServer: MyWebSocketServer, lowerThirdsManager: LowerThirdsManager): AtemEventHandlers => {
+    lowerThirdsManager.webSocketServer = webSocketServer;
     return {
-        connected: [() => lowerThirdsManager.setLowerThirdsIndex(0)],
+        connected: [() => lowerThirdsManager.setLowerThirdsIndex(0), () => lowerThirdsManager.sendMediaWS],
         stateChanged: [],
         error: [],
         info: [],

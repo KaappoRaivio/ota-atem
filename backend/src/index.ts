@@ -33,7 +33,7 @@ const atemEventDispatcher: AtemEventDispatcher = new AtemEventDispatcher(atemCon
 const lowerThirdsManager: LowerThirdsManager = new LowerThirdsManager(lowerThirdsTexts, atemConsole);
 
 atemEventDispatcher.addHandlers(getMixEffectHandlers(webSocketServer, lowerThirdsManager));
-atemEventDispatcher.addHandlers(getLowerThirdsHandlers(lowerThirdsManager));
+atemEventDispatcher.addHandlers(getLowerThirdsHandlers(webSocketServer, lowerThirdsManager));
 
 atemConsole.connect(config.atem.ip);
 

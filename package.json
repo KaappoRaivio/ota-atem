@@ -1,26 +1,26 @@
 {
-  "name": "ota-atem",
-  "version": "1.0.0",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "prod": "tsc && node ./built/src/index.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/KaappoRaivio/ota-atem.git"
-  },
-  "keywords": [],
-  "author": "Kaappo Raivio",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/KaappoRaivio/ota-atem/issues"
-  },
-  "homepage": "https://github.com/KaappoRaivio/ota-atem#readme",
-  "dependencies": {
-    "express": "^4.17.1",
-    "prettier": "^2.2.1"
-  },
-  "devDependencies": {},
-  "description": ""
+    "name": "ota-atem",
+    "version": "1.0.0",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "prod": "cd backend && yarn prod"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/KaappoRaivio/ota-atem.git"
+    },
+    "keywords": [],
+    "author": "Kaappo Raivio",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/KaappoRaivio/ota-atem/issues"
+    },
+    "homepage": "https://github.com/KaappoRaivio/ota-atem#readme",
+    "dependencies": {
+        "express": "^4.17.1",
+        "prettier": "^2.2.1"
+    },
+    "devDependencies": {},
+    "description": ""
 }

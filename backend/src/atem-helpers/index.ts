@@ -1,6 +1,6 @@
 import { Atem, AtemState } from "atem-connection";
 import { AtemEvent, EventType, MessageType } from "../types/enums";
-import { AtemEventHandlers, Channel, ChannelStateMessage } from "../types/comm";
+import { AtemEventHandlers, Channel, ChannelStateMessage, MediaStateMessage } from "../types/comm";
 import { InputChannel } from "atem-connection/dist/state/input";
 import equal from "deep-equal";
 import config from "../../config.json";
@@ -19,7 +19,7 @@ function getChannelState(state: AtemState) {
     const previewChannel = formatAtemInput(inputChannels[mixEffect.previewInput]);
 
     return {
-        type: MessageType.Event,
+        type: "tally",
         event: EventType.ChannelStateChange,
         program: programChannel,
         preview: previewChannel,
@@ -69,6 +69,7 @@ const getMixEffectHandlers = (webSocketServer: MyWebSocketServer, lowerThirdsMan
                 if (!equal(lastChannelState, currentChannelState)) {
                     if (currentChannelState.preview.index !== config.lowerThirds.previewKeyIndex) {
                         webSocketServer.broadcastWsMessage(currentChannelState);
+                        webSocketServer.setChannelState(currentChannelState);
                         lastChannelState = currentChannelState;
                     }
                 }
@@ -93,17 +94,9 @@ const getMixEffectHandlers = (webSocketServer: MyWebSocketServer, lowerThirdsMan
         });
     };
 
-    const loggerFunc = (atemConsole: Atem, eventType: AtemEvent, state: AtemState, paths: string[]) => {
-        paths.forEach(async path => {
-            if (path.startsWith("video.ME.0.transitionProperties")) {
-                console.log(state.video.mixEffects[0].transitionProperties);
-            }
-        });
-    };
-
     return {
         connected: [onAtemConnected],
-        stateChanged: [handleMixEffectKeyPresses, loggerFunc],
+        stateChanged: [handleMixEffectKeyPresses],
         info: [],
         error: [],
     } as AtemEventHandlers;

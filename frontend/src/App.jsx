@@ -2,12 +2,14 @@ import React, { useEffect, useState } from "react";
 
 import styles from "./App.module.css";
 import Tally from "./Tally.jsx";
+import Media from "./Media.jsx";
 
 import { useHistory, useLocation } from "react-router-dom";
 import Welcome from "./Welcome.jsx";
 
 const useCommunication = atemIP => {
     const [state, setState] = useState({});
+    const [mediaState, setMediaState] = useState({});
     const [connected, setConnected] = useState(false);
     const [error, setError] = useState(null);
 
@@ -24,7 +26,11 @@ const useCommunication = atemIP => {
                     let json;
                     try {
                         json = JSON.parse(event.data);
-                        setState(json);
+                        if (json.type === "tally") {
+                            setState(json);
+                        } else if (json.type === "media") {
+                            setMediaState(json);
+                        }
                     } catch (err) {
                         console.log("Couldn't parse: ", event.data);
                     }
@@ -52,7 +58,7 @@ const useCommunication = atemIP => {
         initializeSocket();
     }, [atemIP]);
 
-    return { connected, state, error };
+    return { connected, state, mediaState, error };
 };
 
 const useQuery = () => {
@@ -65,13 +71,15 @@ const App = props => {
     const [serverAddress, setServerAddress] = useState(params.get("serverAddress") || window.location.hostname);
     const [camera, setCamera] = useState(parseInt(params.get("camera")) || 1);
 
-    const { connected, state, error } = useCommunication(serverAddress);
+    const { connected, state, mediaState, error } = useCommunication(serverAddress);
     const [settingsOpen, setSettingsOpen] = useState(params.get("settingsOpen") !== "false");
+
+    const [mediaOpen, setMediaOpen] = useState(params.get("mediaOpen") === "true");
 
     const history = useHistory();
     useEffect(() => {
-        history.push(`/tally?camera=${camera}&serverAddress=${serverAddress}&settingsOpen=${settingsOpen}`);
-    }, [camera, serverAddress, settingsOpen]);
+        history.push(`/tally?camera=${camera}&serverAddress=${serverAddress}&settingsOpen=${settingsOpen}&mediaOpen=${mediaOpen}`);
+    }, [camera, serverAddress, settingsOpen, mediaOpen, history]);
 
     useEffect(() => {
         console.log("Connected: ", connected);
@@ -87,6 +95,8 @@ const App = props => {
                 }}
             />
         );
+    } else if (mediaOpen) {
+        return <Media state={mediaState} serverAddress={serverAddress} />;
     } else {
         return (
             <>
