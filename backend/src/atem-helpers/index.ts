@@ -67,7 +67,10 @@ const getMixEffectHandlers = (webSocketServer: MyWebSocketServer, lowerThirdsMan
                 const currentChannelState = getChannelState(state);
 
                 if (!equal(lastChannelState, currentChannelState)) {
-                    if (currentChannelState.preview.index !== config.lowerThirds.previewKeyIndex) {
+                    if (
+                        currentChannelState.preview.index !== config.lowerThirds.previewKeyIndex &&
+                        currentChannelState.preview.index !== config.lowerThirds.nextKeyIndex
+                    ) {
                         webSocketServer.broadcastWsMessage(currentChannelState);
                         webSocketServer.setChannelState(currentChannelState);
                         lastChannelState = currentChannelState;
