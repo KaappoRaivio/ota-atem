@@ -67,7 +67,7 @@ app.get("/getLowerThirdsIndex", async (req, res) => {
     res.status(200).json(lowerThirdsManager.getLowerThirdsIndex());
 });
 
-app.post("/setLowerThirdsIndex", async (req, res) => {
+app.post("/setMediaIndex", async (req, res) => {
     // en jaksa validoida tätä...
     lowerThirdsManager.setLowerThirdsIndex(req.body);
     res.status(200);

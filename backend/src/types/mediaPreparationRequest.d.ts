@@ -7,8 +7,10 @@
 
 export interface MediaPreparationRequest {
   lowerThirdsList: {
-    templateFile?: string;
-    texts?: {
+    templateFile: string;
+    texts: {
+      title: string;
+      subtitle: string;
       [k: string]: unknown;
     };
   }[];

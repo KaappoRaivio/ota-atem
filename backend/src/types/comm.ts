@@ -1,14 +1,8 @@
 import { SubscriptionAction, MessageType, EventType, AtemEvent } from "enums";
 
 export interface Message {
-    type: MessageType;
+    type: string;
     data?: any;
-}
-
-export interface SubscriptionMessage extends Message {
-    type: MessageType.Subscription;
-    action: SubscriptionAction;
-    event: string;
 }
 
 export interface Channel {
@@ -22,9 +16,19 @@ export interface EventMessage extends Message {
 }
 
 export interface ChannelStateMessage extends Message {
+    type: "tally";
     program: Channel;
     preview: Channel;
     inTransition: boolean;
+}
+
+export interface MediaStateMessage extends Message {
+    type: "media";
+    currentIndex: number;
+    currentValues: {
+        title: string;
+        subtitle: string;
+    };
 }
 
 export type AtemEventHandlers = { [key in keyof typeof AtemEvent]: Function[] };

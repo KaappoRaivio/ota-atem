@@ -11,7 +11,16 @@
                         "type": "string"
                     },
                     "texts": {
-                        "type": "object"
+                        "type": "object",
+                        "properties": {
+                            "title": {
+                                "type": "string"
+                            },
+                            "subtitle": {
+                                "type": "string"
+                            }
+                        },
+                        "required": ["title", "subtitle"]
                     }
                 },
                 "additionalProperties": false,
