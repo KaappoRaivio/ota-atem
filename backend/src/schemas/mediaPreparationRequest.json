@@ -15,7 +15,7 @@
                     }
                 },
                 "additionalProperties": false,
-                "required": ["title", "subtitle"]
+                "required": ["templateFile", "texts"]
             }
         }
     },
