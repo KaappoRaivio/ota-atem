@@ -7,9 +7,8 @@ import Media from "./Media.jsx";
 import { useHistory, useLocation } from "react-router-dom";
 import Welcome from "./Welcome.jsx";
 
-const useCommunication = atemIP => {
+export const useCommunication = (atemIP, validator) => {
     const [state, setState] = useState({});
-    const [mediaState, setMediaState] = useState({});
     const [connected, setConnected] = useState(false);
     const [error, setError] = useState(null);
 
@@ -26,11 +25,15 @@ const useCommunication = atemIP => {
                     let json;
                     try {
                         json = JSON.parse(event.data);
-                        if (json.type === "tally") {
+
+                        if (validator(json)) {
                             setState(json);
-                        } else if (json.type === "media") {
-                            setMediaState(json);
                         }
+                        // if (json.type === "tally") {
+                        //     setState(json);
+                        // } else if (json.type === "media") {
+                        //     setMediaState(json);
+                        // }
                     } catch (err) {
                         console.log("Couldn't parse: ", event.data);
                     }
@@ -58,20 +61,20 @@ const useCommunication = atemIP => {
         initializeSocket();
     }, [atemIP]);
 
-    return { connected, state, mediaState, error };
+    return { connected, state, error };
 };
 
 const useQuery = () => {
     return new URLSearchParams(useLocation().search);
 };
 
-const App = props => {
+const TallyLanding = props => {
     const params = useQuery();
 
     const [serverAddress, setServerAddress] = useState(params.get("serverAddress") || window.location.hostname);
     const [camera, setCamera] = useState(parseInt(params.get("camera")) || 1);
 
-    const { connected, state, mediaState, error } = useCommunication(serverAddress);
+    const { connected, state, error } = useCommunication(serverAddress, json => json.type === "tally");
     const [settingsOpen, setSettingsOpen] = useState(params.get("settingsOpen") !== "false");
 
     const [mediaOpen, setMediaOpen] = useState(params.get("mediaOpen") === "true");
@@ -95,8 +98,6 @@ const App = props => {
                 }}
             />
         );
-    } else if (mediaOpen) {
-        return <Media state={mediaState} serverAddress={serverAddress} />;
     } else {
         return (
             <>
@@ -111,6 +112,6 @@ const App = props => {
     }
 };
 
-App.propTypes = {};
+TallyLanding.propTypes = {};
 
-export default App;
+export default TallyLanding;

@@ -2,15 +2,7 @@ import React from "react";
 import styles from "./Media.module.css";
 
 const Media = ({ state, serverAddress }) => {
-    function next() {
-        sendIndex(state.currentIndex + 1);
-    }
-
-    function prev() {
-        sendIndex(state.currentIndex - 1);
-    }
-
-    function sendIndex(index) {
+    const sendIndex = index => {
         fetch(`http://${serverAddress}/setMediaIndex`, {
             method: "POST",
             headers: {
@@ -18,7 +10,7 @@ const Media = ({ state, serverAddress }) => {
             },
             body: JSON.stringify({ index }),
         });
-    }
+    };
 
     return (
         <div className={`${styles.parent}`}>
@@ -28,10 +20,10 @@ const Media = ({ state, serverAddress }) => {
                 <p className={styles.subtitle}>{state.currentValues?.subtitle}</p>
             </div>
             <div className={styles.child}>
-                <button className={styles.button} onClick={next}>
+                <button className={styles.button} onClick={() => sendIndex(state.currentIndex + 1)}>
                     Next
                 </button>
-                <button className={styles.button} onClick={prev}>
+                <button className={styles.button} onClick={() => sendIndex(state.currentIndex - 1)}>
                     Prev
                 </button>
             </div>
