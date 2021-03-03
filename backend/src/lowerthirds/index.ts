@@ -25,7 +25,24 @@ async function render(lowerThirdsOptions: LowerThirdsOptions) {
     const pngBuffer = await takeScreenshot(compiled);
     if (pngBuffer === undefined) throw new Error("Invalid PNG buffer");
     // convert to RGBA buffer
-    return await sharp(pngBuffer).ensureAlpha().raw().toBuffer();
+    const buf = await sharp(pngBuffer).ensureAlpha().raw().toBuffer();
+    let outputBuf = Buffer.alloc(buf.length);
+    for (let i = 0; i < buf.length; i += 4) {
+        let r = buf[i];
+        let g = buf[i + 1];
+        let b = buf[i + 2];
+        let a = buf[i + 3];
+
+        if (g === 255) {
+            a = 255;
+        }
+
+        outputBuf[i] = (r * a) / 255;
+        outputBuf[i + 1] = (g * a) / 255;
+        outputBuf[i + 2] = (b * a) / 255;
+        outputBuf[i + 3] = a;
+    }
+    return outputBuf;
 }
 
 async function takeScreenshot(html: string) {
@@ -93,32 +110,9 @@ class LowerThirdsManager {
 }
 
 const getLowerThirdsHandlers = (lowerThirdsManager: LowerThirdsManager): AtemEventHandlers => {
-    let lastMacroIndex: number = -1;
-    const handleMacros = (atemConsole: Atem, eventType: AtemEvent, state: AtemState, paths: string[]) => {
-        paths.forEach(async path => {
-            if (path.startsWith("macro.macroPlayer")) {
-                console.log(path);
-                const macroState = state.macro.macroPlayer;
-                const { macroIndex, isRunning } = macroState;
-                console.log(macroState);
-
-                if (macroIndex === config.lowerThirds.macroIndex && isRunning) {
-                    console.log("Macro started");
-                    console.log("-----------------------------------------------");
-                    lastMacroIndex = macroIndex;
-                } else if (lastMacroIndex === config.lowerThirds.macroIndex && !isRunning) {
-                    lastMacroIndex = -1;
-                    console.log("Macro ended");
-
-                    lowerThirdsManager.nextLowerThirds();
-                }
-            }
-        });
-    };
-
     return {
         connected: [() => lowerThirdsManager.setLowerThirdsIndex(0)],
-        stateChanged: [handleMacros],
+        stateChanged: [],
         error: [],
         info: [],
     } as AtemEventHandlers;

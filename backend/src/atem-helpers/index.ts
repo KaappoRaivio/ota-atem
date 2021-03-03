@@ -6,6 +6,11 @@ import equal from "deep-equal";
 import config from "../../config.json";
 import { LowerThirdsManager } from "../lowerthirds";
 import { MyWebSocketServer } from "../wss";
+import { logger } from "handlebars";
+
+function timeout(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 function getChannelState(state: AtemState) {
     const mixEffect = state.video.mixEffects[0];
@@ -30,9 +35,24 @@ function formatAtemInput(atemChannel: InputChannel) {
     } as Channel;
 }
 
+async function runLowerThirds(atemConsole: Atem) {
+    console.log("Start macro");
+    await atemConsole.setTransitionStyle({
+        nextSelection: 2,
+    });
+    await atemConsole.autoTransition();
+    await timeout(3000);
+    await atemConsole.autoTransition();
+    await atemConsole.setTransitionStyle({
+        nextSelection: 1,
+    });
+    console.log("End macro");
+}
+
 const getMixEffectHandlers = (webSocketServer: MyWebSocketServer, lowerThirdsManager: LowerThirdsManager): AtemEventHandlers => {
     let lastChannelState: ChannelStateMessage;
     let lastMacroState: AtemState["macro"]["macroPlayer"];
+    let isMacroRunning: boolean = false;
 
     const onAtemConnected = (atemConsole: Atem) => {
         console.log("Atem connected");
@@ -60,18 +80,30 @@ const getMixEffectHandlers = (webSocketServer: MyWebSocketServer, lowerThirdsMan
 
                 if (!equal(lastChannelState, currentChannelState)) {
                     if (currentChannelState.preview.index === config.lowerThirds.previewKeyIndex) {
-                        console.log("Macro key pressed");
                         await atemConsole.changePreviewInput(lastChannelState.preview.index);
-                        await atemConsole.macroRun(config.lowerThirds.macroIndex);
+                        if (!isMacroRunning) {
+                            isMacroRunning = true;
+                            runLowerThirds(atemConsole).then(() => {
+                                isMacroRunning = false;
+                            });
+                        }
                     }
                 }
             }
         });
     };
 
+    const loggerFunc = (atemConsole: Atem, eventType: AtemEvent, state: AtemState, paths: string[]) => {
+        paths.forEach(async path => {
+            if (path.startsWith("video.ME.0.transitionProperties")) {
+                console.log(state.video.mixEffects[0].transitionProperties);
+            }
+        });
+    };
+
     return {
         connected: [onAtemConnected],
-        stateChanged: [handleMixEffectKeyPresses],
+        stateChanged: [handleMixEffectKeyPresses, loggerFunc],
         info: [],
         error: [],
     } as AtemEventHandlers;
