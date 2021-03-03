@@ -80,6 +80,10 @@ class LowerThirdsManager {
         this.prepareNextLowerThirds();
     }
 
+    public getLowerThirdsIndex(): number {
+        return this.currentTextIndex;
+    }
+
     private prepareNextLowerThirds() {
         const lowerThirdsUploadedPromise = new Promise<void>(resolve => {
             const inner = async () => {

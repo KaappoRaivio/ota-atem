@@ -63,6 +63,16 @@ app.get("/getLowerThirds", async (req, res) => {
     res.status(200).json(lowerThirdsManager.lowerThirdsData);
 });
 
+app.get("/getLowerThirdsIndex", async (req, res) => {
+    res.status(200).json(lowerThirdsManager.getLowerThirdsIndex());
+});
+
+app.post("/setLowerThirdsIndex", async (req, res) => {
+    // en jaksa validoida tätä...
+    lowerThirdsManager.setLowerThirdsIndex(req.body);
+    res.status(200);
+});
+
 export const IS_DEVELOPMENT_ENVIRONMENT = !process.env.NODE_ENV || process.env.NODE_ENV === "development";
 console.log(IS_DEVELOPMENT_ENVIRONMENT);
 if (!IS_DEVELOPMENT_ENVIRONMENT) {
