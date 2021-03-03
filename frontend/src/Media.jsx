@@ -16,7 +16,7 @@ const Media = ({ state, serverAddress }) => {
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify(index),
+            body: JSON.stringify({ index }),
         });
     }
 

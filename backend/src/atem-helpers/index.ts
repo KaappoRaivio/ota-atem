@@ -89,6 +89,10 @@ const getMixEffectHandlers = (webSocketServer: MyWebSocketServer, lowerThirdsMan
                             });
                         }
                     }
+                    if (currentChannelState.preview.index === config.lowerThirds.nextKeyIndex) {
+                        await atemConsole.changePreviewInput(lastChannelState.preview.index);
+                        lowerThirdsManager.nextLowerThirds();
+                    }
                 }
             }
         });
