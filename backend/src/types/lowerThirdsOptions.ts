@@ -1,4 +1,4 @@
 export interface LowerThirdsOptions {
-    title: string;
-    subtitle: string;
+    templateFile: string;
+    texts: any;
 }

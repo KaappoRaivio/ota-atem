@@ -1,23 +1,24 @@
 {
-  "title": "MediaPreparationRequest",
-  "type": "object",
-  "properties": {
-    "lowerThirdsList": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "title": {
-            "type": "string"
-          },"subtitle": {
-            "type": "string"
-          }
-        },
-        "additionalProperties": false,
-        "required": ["title", "subtitle"]
-      }
-    }
-  },
-  "additionalProperties": false,
-  "required": ["lowerThirdsList"]
+    "title": "MediaPreparationRequest",
+    "type": "object",
+    "properties": {
+        "lowerThirdsList": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "templateFile": {
+                        "type": "string"
+                    },
+                    "texts": {
+                        "type": "object"
+                    }
+                },
+                "additionalProperties": false,
+                "required": ["title", "subtitle"]
+            }
+        }
+    },
+    "additionalProperties": false,
+    "required": ["lowerThirdsList"]
 }

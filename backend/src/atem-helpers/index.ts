@@ -8,7 +8,7 @@ import { LowerThirdsManager } from "../lowerthirds";
 import { MyWebSocketServer } from "../wss";
 import { logger } from "handlebars";
 
-function timeout(ms) {
+function timeout(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 

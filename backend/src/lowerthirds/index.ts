@@ -12,16 +12,12 @@ import { AtemEventHandlers } from "comm";
 import { MediaPreparationRequest } from "mediaPreparationRequest";
 import { TransferState } from "atem-connection/dist/enums";
 
-const templateHTML = fs.readFileSync(path.resolve(__dirname, "./lowerthirds.html.template"), {
-    encoding: "utf-8",
-});
-const template = Handlebars.compile(templateHTML);
-
 async function render(lowerThirdsOptions: LowerThirdsOptions) {
-    const compiled = template({
-        title: lowerThirdsOptions.title,
-        subtitle: lowerThirdsOptions.subtitle,
+    const templateHTML = fs.readFileSync(path.resolve(__dirname, lowerThirdsOptions.templateFile), {
+        encoding: "utf-8",
     });
+    const template = Handlebars.compile(templateHTML);
+    const compiled = template(lowerThirdsOptions.texts);
     const pngBuffer = await takeScreenshot(compiled);
     if (pngBuffer === undefined) throw new Error("Invalid PNG buffer");
     // convert to RGBA buffer
@@ -89,12 +85,7 @@ class LowerThirdsManager {
             const inner = async () => {
                 const lowerThirdsOptions = this._lowerThirdsData[this.currentTextIndex];
                 const imageBuffer = await render(lowerThirdsOptions);
-                const result = await this.atemConsole.uploadStill(
-                    config.lowerThirds.mediaIndex,
-                    imageBuffer,
-                    lowerThirdsOptions.title,
-                    lowerThirdsOptions.subtitle
-                );
+                const result = await this.atemConsole.uploadStill(config.lowerThirds.mediaIndex, imageBuffer, "Ota-atem image", "Ota-atem image");
                 console.log(result.state === TransferState.Finished);
             };
             inner().then(resolve).catch(console.error);
