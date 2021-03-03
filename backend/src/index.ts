@@ -18,6 +18,7 @@ import path from "path";
 
 const app = express();
 app.use(bodyParser.json());
+app.use(bodyParser.raw());
 app.use(cors());
 
 const webSocketServer: MyWebSocketServer = new MyWebSocketServer();
