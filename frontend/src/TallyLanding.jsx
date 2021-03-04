@@ -64,7 +64,7 @@ export const useCommunication = (atemIP, validator) => {
     return { connected, state, error };
 };
 
-const useQuery = () => {
+export const useQuery = () => {
     return new URLSearchParams(useLocation().search);
 };
 
