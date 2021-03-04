@@ -85,12 +85,14 @@ const getMixEffectHandlers = (webSocketServer: MyWebSocketServer, lowerThirdsMan
                 if (!equal(lastChannelState, currentChannelState)) {
                     if (currentChannelState.preview.index === config.lowerThirds.previewKeyIndex) {
                         await atemConsole.changePreviewInput(lastChannelState.preview.index);
-                        if (!isMacroRunning) {
-                            isMacroRunning = true;
-                            runLowerThirds(atemConsole).then(() => {
-                                isMacroRunning = false;
-                            });
-                        }
+                        await atemConsole.macroRun(0);
+
+                        // if (!isMacroRunning) {
+                        //     isMacroRunning = true;
+                        //     runLowerThirds(atemConsole).then(() => {
+                        //         isMacroRunning = false;
+                        //     });
+                        // }
                     }
                     if (currentChannelState.preview.index === config.lowerThirds.nextKeyIndex) {
                         await atemConsole.changePreviewInput(lastChannelState.preview.index);
