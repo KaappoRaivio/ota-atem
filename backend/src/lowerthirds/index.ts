@@ -31,7 +31,7 @@ async function render(lowerThirdsOptions: LowerThirdsOptions) {
         let b = buf[i + 2];
         let a = buf[i + 3];
 
-        if (g === 255 && r === 0 && b === 0) {
+        if (g > 55 && r < 30 && b < 113) {
             a = 0;
         }
 
