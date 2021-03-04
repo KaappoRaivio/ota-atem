@@ -35,9 +35,9 @@ async function render(lowerThirdsOptions: LowerThirdsOptions) {
             a = 0;
         }
 
-        outputBuf[i] = (r * a) / 255;
-        outputBuf[i + 1] = (g * a) / 255;
-        outputBuf[i + 2] = (b * a) / 255;
+        outputBuf[i] = r * (a / 255);
+        outputBuf[i + 1] = g * (a / 255);
+        outputBuf[i + 2] = b * (a / 255);
         outputBuf[i + 3] = a;
     }
     return outputBuf;
