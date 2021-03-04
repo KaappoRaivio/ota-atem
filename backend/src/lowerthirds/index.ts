@@ -31,8 +31,8 @@ async function render(lowerThirdsOptions: LowerThirdsOptions) {
         let b = buf[i + 2];
         let a = buf[i + 3];
 
-        if (g === 255) {
-            a = 255;
+        if (g === 255 && r === 0 && b === 0) {
+            a = 0;
         }
 
         outputBuf[i] = (r * a) / 255;
