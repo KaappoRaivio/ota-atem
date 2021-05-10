@@ -1,4 +1,4 @@
-export interface LowerThirdsOptions {
+export interface LowerThirdsOption {
     templateFile: string;
     texts: {
         title: string;

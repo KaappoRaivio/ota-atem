@@ -9,7 +9,7 @@ import { getMixEffectHandlers } from "./atem-helpers";
 import { AtemEventDispatcher } from "./atem-eventdispatcher";
 import { MyWebSocketServer } from "./wss";
 import { MediaPreparationRequest } from "mediaPreparationRequest";
-import { LowerThirdsOptions } from "lowerThirdsOptions";
+import { LowerThirdsOption } from "lowerThirdsOption.ts";
 import bodyParser from "body-parser";
 import { AtemEvent } from "enums";
 
@@ -52,8 +52,8 @@ app.post("/prepareLowerThirds", async (req, res) => {
     console.log("request");
     if (validateMediaPreparationRequest(req.body)) {
         res.sendStatus(200);
-        const mediaPreparationRequest: LowerThirdsOptions[] = req.body.lowerThirdsList;
-        console.log(mediaPreparationRequest);
+        const mediaPreparationRequest: LowerThirdsOption[] = req.body.lowerThirdsList;
+        console.log("media", mediaPreparationRequest);
         lowerThirdsManager.setLowerThirds(mediaPreparationRequest);
     } else {
         res.sendStatus(400);

@@ -1,4 +1,4 @@
-import { LowerThirdsOptions } from "../types/lowerThirdsOptions";
+import { LowerThirdsOption } from "lowerThirdsOption.ts";
 import puppeteer from "puppeteer";
 import Handlebars from "handlebars";
 import fs from "fs";
@@ -14,7 +14,7 @@ import { TransferState } from "atem-connection/dist/enums";
 import { MyWebSocketServer } from "../wss";
 import { send } from "process";
 
-async function render(lowerThirdsOptions: LowerThirdsOptions) {
+async function render(lowerThirdsOptions: LowerThirdsOption) {
     const templateHTML = fs.readFileSync(path.resolve(__dirname, lowerThirdsOptions.templateFile), {
         encoding: "utf-8",
     });
@@ -58,15 +58,15 @@ async function takeScreenshot(html: string) {
 }
 
 class LowerThirdsManager {
-    get lowerThirdsData(): LowerThirdsOptions[] {
+    get lowerThirdsData(): LowerThirdsOption[] {
         return this._lowerThirdsData;
     }
-    private _lowerThirdsData: LowerThirdsOptions[];
+    private _lowerThirdsData: LowerThirdsOption[];
     private currentTextIndex: number;
     private atemConsole: Atem;
     public webSocketServer: MyWebSocketServer;
 
-    constructor(lowerThirdsData: LowerThirdsOptions[], atemConsole: Atem) {
+    constructor(lowerThirdsData: LowerThirdsOption[], atemConsole: Atem) {
         this._lowerThirdsData = lowerThirdsData;
         this.currentTextIndex = 0;
         this.atemConsole = atemConsole;
@@ -96,6 +96,7 @@ class LowerThirdsManager {
     }
 
     public setLowerThirdsIndex(index: number): void {
+        console.log(index);
         this.currentTextIndex = index % this._lowerThirdsData.length;
         this.prepareNextLowerThirds();
         this.sendMediaWS();
@@ -117,7 +118,7 @@ class LowerThirdsManager {
         });
     }
 
-    setLowerThirds(lowerThirdsData: LowerThirdsOptions[]): void {
+    setLowerThirds(lowerThirdsData: LowerThirdsOption[]): void {
         console.log(this._lowerThirdsData);
         this._lowerThirdsData = lowerThirdsData;
         console.log(this._lowerThirdsData);
