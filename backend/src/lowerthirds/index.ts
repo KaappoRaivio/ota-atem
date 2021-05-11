@@ -78,10 +78,7 @@ class LowerThirdsManager {
         const msg = {
             type: "media",
             currentIndex: index,
-            currentValues: {
-                title: data.texts.title,
-                subtitle: data.texts.subtitle,
-            },
+            currentValues: data.texts,
         } as MediaStateMessage;
         console.log(msg);
         this.webSocketServer.broadcastWsMessage(msg);
