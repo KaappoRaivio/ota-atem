@@ -12,13 +12,14 @@ const sendIndex = (index, serverAddress) => {
     });
 };
 const Media = ({ state, serverAddress }) => {
+    console.log(state);
     return (
         <div className={`${styles.parent}`}>
             <div className={styles.child}>
                 <p className={styles.index}>{state.currentIndex}</p>
-                {Object.keys(state.currentValues).map(key => (
-                    <p className={styles.title}>{key + " " + state.currentValues[key]}</p>
-                ))}
+                {state.currentValues != null
+                    ? Object.keys(state.currentValues).map(key => <p className={styles.title}>{key + " " + state?.currentValues[key]}</p>)
+                    : null}
 
                 {/*<p className={styles.subtitle}>{state.currentValues?.subtitle}</p>*/}
             </div>
