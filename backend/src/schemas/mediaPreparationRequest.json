@@ -11,16 +11,7 @@
                         "type": "string"
                     },
                     "texts": {
-                        "type": "object",
-                        "properties": {
-                            "title": {
-                                "type": "string"
-                            },
-                            "subtitle": {
-                                "type": "string"
-                            }
-                        },
-                        "required": ["title", "subtitle"]
+                        "type": "object"
                     }
                 },
                 "additionalProperties": false,
