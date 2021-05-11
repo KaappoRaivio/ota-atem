@@ -16,8 +16,11 @@ const Media = ({ state, serverAddress }) => {
         <div className={`${styles.parent}`}>
             <div className={styles.child}>
                 <p className={styles.index}>{state.currentIndex}</p>
-                <p className={styles.title}>{state.currentValues?.title}</p>
-                <p className={styles.subtitle}>{state.currentValues?.subtitle}</p>
+                {Object.keys(state.currentValues).map(key => (
+                    <p className={styles.title}>{key + " " + state.currentValues[key]}</p>
+                ))}
+
+                {/*<p className={styles.subtitle}>{state.currentValues?.subtitle}</p>*/}
             </div>
             <div className={styles.child}>
                 <button

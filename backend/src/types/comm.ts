@@ -25,10 +25,7 @@ export interface ChannelStateMessage extends Message {
 export interface MediaStateMessage extends Message {
     type: "media";
     currentIndex: number;
-    currentValues: {
-        title: string;
-        subtitle: string;
-    };
+    currentValues: object;
 }
 
 export type AtemEventHandlers = { [key in keyof typeof AtemEvent]: Function[] };
