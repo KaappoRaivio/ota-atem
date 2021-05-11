@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <script src="https://livejs.com/live.js"></script>
+        <meta charset="utf-8" />
+
+        <title>Mario Kart</title>
+        <meta name="description" content="Vitun säätö xd" />
+        <meta name="author" content="Kaappo Raivio" />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            :root {
+                --color: #070a24;
+                --corner: 30px;
+                --distance: 40px;
+                --fontsize: 6px;
+                --height: 120px;
+            }
+
+            * {
+                box-sizing: border-box;
+            }
+
+            body {
+                font-size: var(--fontsize);
+                /*font-size: 1vh;*/
+                font-family: Roboto, sans-serif;
+                background: #00ff00;
+                color: white;
+                white-space: nowrap;
+                font-weight: 300;
+            }
+
+            .lowerthirds-container {
+                display: flex;
+                flex-direction: column;
+                border-radius: 100px;
+                font-size: 350%;
+            }
+
+            .lowerthirds-title {
+                font-size: 160%;
+                /*background: #1a237e;*/
+                clear: both;
+                width: 50%;
+                float: left;
+                font-weight: bolder;
+                padding: 7.5px;
+                display: inline-block;
+                border-top-right-radius: var(--corner);
+                /*flex: 1 0 70%;*/
+            }
+
+            .lowerthirds-subtitle {
+                padding: 5px 10px 10px 10px;
+                /*background: #1a237e;*/
+                clear: both;
+                float: left;
+                display: inline-block;
+                font-size: 135%;
+                border-top-right-radius: var(--corner);
+                border-bottom-right-radius: var(--corner);
+            }
+
+            p,
+            span {
+                /*padding: 10% 20%;*/
+                padding: 0;
+                margin: 0;
+            }
+            img {
+                max-height: 100%;
+            }
+
+            .graphic-container {
+                position: absolute;
+                /*bottom: 80px;*/
+                /*left: 80px;*/
+                display: flex;
+                flex-direction: row;
+                height: var(--height);
+                background: var(--color);
+                padding-top: 5px;
+                padding-right: 7px;
+                padding-left: 7px;
+
+                /*border-top-left-radius: var(--corner);*/
+                /*border-bottom-right-radius: var(--corner);*/
+            }
+
+            .top-left {
+                border-top-right-radius: var(--corner);
+                border-bottom-left-radius: var(--corner);
+
+                top: calc(50% - var(--height) - var(--distance));
+                left: var(--distance);
+            }
+
+            .bottom-left {
+                border-top-left-radius: var(--corner);
+                border-bottom-right-radius: var(--corner);
+
+                bottom: var(--distance);
+                left: var(--distance);
+            }
+
+            .top-right {
+                border-top-left-radius: var(--corner);
+                border-bottom-right-radius: var(--corner);
+
+                top: calc(50% - var(--height) - var(--distance));
+                left: calc(50% + var(--distance));
+            }
+
+            .bottom-right {
+                border-top-right-radius: var(--corner);
+                border-bottom-left-radius: var(--corner);
+
+                bottom: var(--distance);
+                left: calc(50% + var(--distance));
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="graphic-container top-left">
+            <div class="lowerthirds-container">
+                <p class="lowerthirds-title">{{player1Title}}</p>
+                <p class="lowerthirds-subtitle">{{player1Subtitle}}</p>
+            </div>
+        </div>
+
+        <div class="graphic-container top-right">
+            <div class="lowerthirds-container">
+                <p class="lowerthirds-title">{{player2Title}}</p>
+                <p class="lowerthirds-subtitle">{{player2Subtitle}}</p>
+            </div>
+        </div>
+
+        <div class="graphic-container bottom-left">
+            <div class="lowerthirds-container">
+                <p class="lowerthirds-title">{{player3Title}}</p>
+                <p class="lowerthirds-subtitle">{{player3Subtitle}}</p>
+            </div>
+        </div>
+
+        <div class="graphic-container bottom-right">
+            <div class="lowerthirds-container">
+                <p class="lowerthirds-title">{{player4Title}}</p>
+                <p class="lowerthirds-subtitle">{{player4Subtitle}}</p>
+            </div>
+        </div>
+    </body>
+</html>
