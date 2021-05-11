@@ -96,32 +96,32 @@
                 border-top-right-radius: var(--corner);
                 border-bottom-left-radius: var(--corner);
 
-                top: calc(50% - var(--height) - var(--distance));
-                left: var(--distance);
+                top: calc(var(--distance));
+                right: calc(50% + var(--distance));
             }
 
             .bottom-left {
                 border-top-left-radius: var(--corner);
                 border-bottom-right-radius: var(--corner);
 
-                bottom: var(--distance);
-                left: var(--distance);
+                top: calc(50% + var(--distance));
+                right: calc(50% + var(--distance));
             }
 
             .top-right {
                 border-top-left-radius: var(--corner);
                 border-bottom-right-radius: var(--corner);
 
-                top: calc(50% - var(--height) - var(--distance));
-                left: calc(50% + var(--distance));
+                top: var(--distance);
+                right: var(--distance);
             }
 
             .bottom-right {
                 border-top-right-radius: var(--corner);
                 border-bottom-left-radius: var(--corner);
 
-                bottom: var(--distance);
-                left: calc(50% + var(--distance));
+                top: calc(50% + var(--distance));
+                right: var(--distance);
             }
         </style>
     </head>
