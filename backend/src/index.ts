@@ -76,6 +76,8 @@ app.post("/updateLowerThirds", async (req, res) => {
         } else if (req.body.action === "set") {
             const i: number = req.body.index;
             const item: LowerThirdsOption = req.body.item;
+
+            console.log(i, item);
             const r = lowerThirdsManager.setLowerThirdsItem(i, item);
             if (r === false) {
                 console.log("invalid index");

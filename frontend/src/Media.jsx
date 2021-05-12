@@ -11,6 +11,17 @@ const sendIndex = (index, serverAddress) => {
         body: JSON.stringify({ index }),
     });
 };
+
+const updateLowerThirds = (index, newLowerThirds, serverAddress) => {
+    fetch(`http://${serverAddress}/updateLowerThirds`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ action: "set", index, item: newLowerThirds }),
+    });
+};
+
 const Media = ({ state, serverAddress }) => {
     console.log(state, serverAddress);
 
@@ -37,6 +48,9 @@ const Media = ({ state, serverAddress }) => {
                 </button>
                 <button className={styles.button} onClick={() => sendIndex(state.currentIndex - 1, serverAddress)}>
                     Prev
+                </button>
+                <button className={styles.button} onClick={() => updateLowerThirds(state.currentIndex, currentJSON, serverAddress)}>
+                    Submit
                 </button>
             </div>
 
