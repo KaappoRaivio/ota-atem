@@ -71,7 +71,7 @@ app.get("/getLowerThirdsIndex", async (req, res) => {
 app.post("/setMediaIndex", async (req, res) => {
     // en jaksa validoida tätä...
     lowerThirdsManager.setLowerThirdsIndex(req.body.index);
-    res.status(200);
+    res.sendStatus(200);
 });
 
 export const IS_DEVELOPMENT_ENVIRONMENT = !process.env.NODE_ENV || process.env.NODE_ENV === "development";
