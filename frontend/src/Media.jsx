@@ -40,7 +40,7 @@ const Media = ({ state, serverAddress }) => {
         if (submitResult != null) {
             setTimeout(() => {
                 setSubmitResult(null);
-            }, 5000);
+            }, 1000);
         }
     }, [submitResult]);
 
