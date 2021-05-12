@@ -89,6 +89,7 @@ app.post("/updateLowerThirds", async (req, res) => {
             res.sendStatus(400);
             return;
         }
+        lowerThirdsManager.refresh();
         res.sendStatus(200);
     } else {
         res.sendStatus(400);

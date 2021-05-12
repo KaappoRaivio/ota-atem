@@ -107,6 +107,10 @@ class LowerThirdsManager {
         return this._lowerThirdsData[this.currentTextIndex];
     }
 
+    public refresh(): void {
+        this.prepareNextLowerThirds();
+    }
+
     private prepareNextLowerThirds() {
         const lowerThirdsUploadedPromise = new Promise<void>(resolve => {
             const inner = async () => {

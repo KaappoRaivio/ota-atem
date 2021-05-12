@@ -13,13 +13,14 @@ const sendIndex = (index, serverAddress) => {
 };
 
 const updateLowerThirds = (index, newLowerThirds, serverAddress) => {
+    console.log(`http://${serverAddress}/updateLowerThirds`);
     fetch(`http://${serverAddress}/updateLowerThirds`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({ action: "set", index, item: newLowerThirds }),
-    });
+        body: JSON.stringify({ action: "set", index, item: JSON.parse(newLowerThirds) }),
+    }).then(console.log);
 };
 
 const Media = ({ state, serverAddress }) => {
