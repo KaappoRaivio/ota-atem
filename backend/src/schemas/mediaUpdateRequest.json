@@ -1,0 +1,28 @@
+{
+    "title": "MediaUpdateRequest",
+    "type": "object",
+    "properties": {
+        "action": {
+            "type": "string",
+            "enum": ["remove", "set", "add"]
+        },
+        "index": {
+            "type": "number"
+        },
+        "item": {
+            "type": "object",
+            "properties": {
+                "templateFile": {
+                    "type": "string"
+                },
+                "texts": {
+                    "type": "object"
+                }
+            },
+            "additionalProperties": false,
+            "required": ["templateFile", "texts"]
+        }
+    },
+    "additionalProperties": false,
+    "required": ["action"]
+}

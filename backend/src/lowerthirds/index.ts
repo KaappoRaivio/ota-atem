@@ -1,4 +1,4 @@
-import { LowerThirdsOption } from "lowerThirdsOption.ts";
+import { LowerThirdsOption } from "./../types/lowerThirdsOption";
 import puppeteer from "puppeteer";
 import Handlebars from "handlebars";
 import fs from "fs";
@@ -78,7 +78,7 @@ class LowerThirdsManager {
         const msg = {
             type: "media",
             currentIndex: index,
-            currentValues: data.texts,
+            currentValues: data,
         } as MediaStateMessage;
         console.log(msg);
         this.webSocketServer.broadcastWsMessage(msg);
@@ -103,6 +103,10 @@ class LowerThirdsManager {
         return this.currentTextIndex;
     }
 
+    public getCurrentLowerThirds(): LowerThirdsOption {
+        return this._lowerThirdsData[this.currentTextIndex];
+    }
+
     private prepareNextLowerThirds() {
         const lowerThirdsUploadedPromise = new Promise<void>(resolve => {
             const inner = async () => {
@@ -115,11 +119,33 @@ class LowerThirdsManager {
         });
     }
 
-    setLowerThirds(lowerThirdsData: LowerThirdsOption[]): void {
+    public setLowerThirds(lowerThirdsData: LowerThirdsOption[]): void {
         console.log(this._lowerThirdsData);
         this._lowerThirdsData = lowerThirdsData;
         console.log(this._lowerThirdsData);
         this.setLowerThirdsIndex(0);
+    }
+
+    public addLowerThirds(item: LowerThirdsOption): void {
+        this._lowerThirdsData.push(item);
+    }
+
+    public removeLowerThirds(i: number): boolean {
+        if (i > -1 && i < this._lowerThirdsData.length) {
+            this._lowerThirdsData.splice(i, 1);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public setLowerThirdsItem(i: number, item: LowerThirdsOption): boolean {
+        if (i > -1 && i < this._lowerThirdsData.length) {
+            this._lowerThirdsData[i] = item;
+            return true;
+        } else {
+            return false;
+        }
     }
 }
 
