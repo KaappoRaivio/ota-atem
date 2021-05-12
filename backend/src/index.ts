@@ -89,9 +89,9 @@ app.post("/updateLowerThirds", async (req, res) => {
             res.sendStatus(400);
             return;
         }
-        lowerThirdsManager.setLowerThirdsIndex(lowerThirdsManager.getLowerThirdsIndex() - 1);
+        // lowerThirdsManager.setLowerThirdsIndex(lowerThirdsManager.getLowerThirdsIndex() - 1);
         lowerThirdsManager.refresh();
-        lowerThirdsManager.nextLowerThirds();
+        // lowerThirdsManager.nextLowerThirds();
         res.sendStatus(200);
     } else {
         res.sendStatus(400);
