@@ -1,6 +1,6 @@
 import { MediaControlRequest } from "mediaControlRequest";
 import { Atem, AtemState } from "atem-connection";
-import { validateMediaControlRequest, validateMediaPreparationRequest } from "./validators";
+import { validateMediaControlRequest, validateMediaPreparationRequest, validateMediaUpdateRequest } from "./validators";
 import config from "../config.json";
 import lowerThirdsTexts from "../lowerthirds.json";
 import express from "express";
@@ -9,7 +9,7 @@ import { getMixEffectHandlers } from "./atem-helpers";
 import { AtemEventDispatcher } from "./atem-eventdispatcher";
 import { MyWebSocketServer } from "./wss";
 import { MediaPreparationRequest } from "mediaPreparationRequest";
-import { LowerThirdsOption } from "lowerThirdsOption.ts";
+import { LowerThirdsOption } from "./types/lowerThirdsOption";
 import bodyParser from "body-parser";
 import { AtemEvent } from "enums";
 
@@ -52,9 +52,42 @@ app.post("/prepareLowerThirds", async (req, res) => {
     console.log("request");
     if (validateMediaPreparationRequest(req.body)) {
         res.sendStatus(200);
-        const mediaPreparationRequest: LowerThirdsOption[] = req.body.lowerThirdsList;
-        console.log("media", mediaPreparationRequest);
-        lowerThirdsManager.setLowerThirds(mediaPreparationRequest);
+        const newMediaList: LowerThirdsOption[] = req.body.lowerThirdsList;
+        console.log("media", newMediaList);
+        lowerThirdsManager.setLowerThirds(newMediaList);
+    } else {
+        res.sendStatus(400);
+    }
+});
+
+app.post("/updateLowerThirds", async (req, res) => {
+    if (validateMediaUpdateRequest(req.body)) {
+        if (req.body.action === "add") {
+            const item: LowerThirdsOption = req.body.item;
+            lowerThirdsManager.addLowerThirds(item);
+        } else if (req.body.action === "remove") {
+            const i: number = req.body.index;
+            const r = lowerThirdsManager.removeLowerThirds(i);
+            if (r === false) {
+                console.log("invalid index");
+                res.sendStatus(500);
+                return;
+            }
+        } else if (req.body.action === "set") {
+            const i: number = req.body.index;
+            const item: LowerThirdsOption = req.body.item;
+            const r = lowerThirdsManager.setLowerThirdsItem(i, item);
+            if (r === false) {
+                console.log("invalid index");
+                res.sendStatus(500);
+                return;
+            }
+        } else {
+            console.log("invalid action");
+            res.sendStatus(400);
+            return;
+        }
+        res.sendStatus(200);
     } else {
         res.sendStatus(400);
     }
@@ -62,6 +95,10 @@ app.post("/prepareLowerThirds", async (req, res) => {
 
 app.get("/getLowerThirds", async (req, res) => {
     res.status(200).json(lowerThirdsManager.lowerThirdsData);
+});
+
+app.get("/getCurrentLowerThirds", async (req, res) => {
+    res.status(200).json(lowerThirdsManager.getCurrentLowerThirds());
 });
 
 app.get("/getLowerThirdsIndex", async (req, res) => {

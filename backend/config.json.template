@@ -5,6 +5,7 @@
     "lowerThirds": {
         "macroIndex": 0,
         "mediaIndex": 1,
-        "previewKeyIndex": 8
+        "previewKeyIndex": 8,
+        "nextKeyIndex": 7
     }
 }
