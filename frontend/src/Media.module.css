@@ -2,12 +2,16 @@
     width: 100%;
     height: 100%;
     display: flex;
+    flex-direction: column;
     font-size: 100%;
 }
 
 .index {
     font-size: 50%;
     margin: 0;
+    flex: 0 0 10%;
+    /*clear: both ;*/
+    /*display: block;*/
 }
 
 .title {
@@ -21,13 +25,17 @@
 
 .child {
     flex: 1;
-    display: flex;
-    flex-direction: column;
+    /*display: flex;*/
+    display: block;
+    /*flex-direction: column;*/
     height: 20vh;
 }
 
 .buttons {
     /*flex: 1;*/
+    position: absolute;
+    right: 0;
+    top: 0;
     display: flex;
     flex-direction: column;
     height: 20vh;
@@ -37,9 +45,9 @@
     flex: 1;
 }
 .input {
-    position: absolute;
     width: 100%;
-    bottom: 0;
+    height: 100vh;
+    flex: 1 0 50%;
 }
 .textarea {
     width: 100%;
