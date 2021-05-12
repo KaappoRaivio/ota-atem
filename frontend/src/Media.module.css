@@ -6,11 +6,13 @@
 }
 
 .index {
-    font-size: 100%;
+    font-size: 50%;
+    margin: 0;
 }
 
 .title {
-    font-size: 100%;
+    margin: 0;
+    font-size: 50%;
 }
 
 .subtitle {
@@ -21,9 +23,24 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    height: 20vh;
+}
+
+.buttons {
+    /*flex: 1;*/
+    display: flex;
+    flex-direction: column;
+    height: 20vh;
 }
 
 .button {
     flex: 1;
+}
+.input {
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+}
+.textarea {
+    width: 100%;
 }

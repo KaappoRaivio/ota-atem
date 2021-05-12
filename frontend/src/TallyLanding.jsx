@@ -7,18 +7,18 @@ import Media from "./Media.jsx";
 import { useHistory, useLocation } from "react-router-dom";
 import Welcome from "./Welcome.jsx";
 
-export const useCommunication = (atemIP, validator) => {
+export const useCommunication = (serverIP, validator) => {
     const [state, setState] = useState({});
     const [connected, setConnected] = useState(false);
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        console.log(atemIP);
+        console.log(serverIP);
 
         const initializeSocket = () => {
             try {
                 console.log("Creating new socket");
-                const socket = new WebSocket(`ws://${atemIP}:7634/`);
+                const socket = new WebSocket(`ws://${serverIP}:7634/`);
                 console.log("Created");
                 socket.onmessage = event => {
                     console.log(event.data);
@@ -59,7 +59,7 @@ export const useCommunication = (atemIP, validator) => {
         };
 
         initializeSocket();
-    }, [atemIP]);
+    }, [serverIP]);
 
     return { connected, state, error };
 };
