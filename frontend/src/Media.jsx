@@ -90,6 +90,12 @@ const Media = ({ state, serverAddress }) => {
                     onClick={() => updateLowerThirds(state.currentIndex, currentJSON, serverAddress, "add").then(ok => setSubmitResult(ok))}>
                     Add
                 </button>
+                <button
+                    style={{ backgroundColor: submitResult != null ? (submitResult ? "green" : "red") : "white" }}
+                    className={styles.button}
+                    onClick={() => updateLowerThirds(state.currentIndex, currentJSON, serverAddress, "remove").then(ok => setSubmitResult(ok))}>
+                    Remove
+                </button>
                 <button className={styles.button} onClick={() => resetCurrentValue()}>
                     Reset
                 </button>
