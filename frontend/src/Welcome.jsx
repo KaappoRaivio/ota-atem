@@ -16,7 +16,8 @@ const schema = [
 ];
 
 const Welcome = ({ onSubmit, initialValues }) => {
-    const [formState, setFormState] = useState(initialValues);
+    const [formState, setFormState] = useState({...initialValues, camera: JSON.stringify(initialValues.camera)});
+    console.log(initialValues)
 
     useEffect(() => {
         console.log(formState);

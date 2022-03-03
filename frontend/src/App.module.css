@@ -7,12 +7,25 @@ html, body {
     width: 100%;
     height: 100%;
     overflow-y: hidden;
+    display: grid;
+    background: #333333;
+    /* grid-template-columns: 1fr 1fr 1fr 1fr; */
+}
+.break {
+    flex-basis: 100%;
+    height: 0;
+  }
+.tallyWrapper {
+    position: relative;
+    width: 100%;
+    /* height: 100%; */
+    overflow-y: hidden;
+    flex: 1 0 33%;
 }
 
 .backoverlay {
     width: 100%;
     height: 100%;
-
 }
 .backoverlay > button {
     background: rgba(255, 255, 255, 0.25);

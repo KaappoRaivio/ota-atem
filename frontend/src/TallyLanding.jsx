@@ -72,7 +72,18 @@ const TallyLanding = props => {
     const params = useQuery();
 
     const [serverAddress, setServerAddress] = useState(params.get("serverAddress") || window.location.hostname);
-    const [camera, setCamera] = useState(parseInt(params.get("camera")) || 1);
+    
+    let cams;
+    try {
+        cams = JSON.parse(params.get("cameras")) || [1,];
+        if (!Array.isArray(cams)) cams = [1,];
+    } catch (e) {
+        cams = [1,]
+    }
+    console.log(cams)
+    const [cameras, setCameras] = useState(cams.map(a => parseInt(a)));
+console.log(cameras)
+console.log(JSON.stringify(cameras))
 
     const { connected, state, error } = useCommunication(serverAddress, json => json.type === "tally");
     const [settingsOpen, setSettingsOpen] = useState(params.get("settingsOpen") !== "false");
@@ -81,8 +92,8 @@ const TallyLanding = props => {
 
     const history = useHistory();
     useEffect(() => {
-        history.push(`/tally?camera=${camera}&serverAddress=${serverAddress}&settingsOpen=${settingsOpen}&mediaOpen=${mediaOpen}`);
-    }, [camera, serverAddress, settingsOpen, mediaOpen, history]);
+        history.push(`/tally?cameras=${JSON.stringify(cameras)}&serverAddress=${serverAddress}&settingsOpen=${settingsOpen}&mediaOpen=${mediaOpen}`);
+    }, [cameras, serverAddress, settingsOpen, mediaOpen, history]);
 
     useEffect(() => {
         console.log("Connected: ", connected);
@@ -90,10 +101,11 @@ const TallyLanding = props => {
     if (settingsOpen) {
         return (
             <Welcome
-                initialValues={{ serverAddress, camera }}
+                initialValues={{ serverAddress, camera: cameras }}
                 onSubmit={({ serverAddress, camera }) => {
                     setServerAddress(serverAddress);
-                    setCamera(parseInt(camera));
+                    console.log(camera)
+                    setCameras(parseInt(camera) ? [parseInt(camera)] : JSON.parse(camera));
                     setSettingsOpen(false);
                 }}
             />
@@ -101,12 +113,16 @@ const TallyLanding = props => {
     } else {
         return (
             <>
-                <div className={styles.parent}>
-                    <Tally connected={connected} state={state} index={camera} />
-                    <div className={styles.backoverlay}>
+                <div className={styles.parent} style={{gridTemplateColumns: "1fr ".repeat(Math.min(cams.length, 4))}}>
+                    {cameras.map(camera => <div className={styles.tallyWrapper}>
+                        <Tally connected={connected} state={state} index={camera} />
+                    </div>)}
+                    
+                    
+                </div>
+                <div className={styles.backoverlay}>
                         <button onDoubleClick={() => setSettingsOpen(true)}>settings</button>
                     </div>
-                </div>
             </>
         );
     }
