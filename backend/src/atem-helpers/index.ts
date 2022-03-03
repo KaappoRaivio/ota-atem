@@ -85,7 +85,7 @@ const getMixEffectHandlers = (webSocketServer: MyWebSocketServer, lowerThirdsMan
                 if (!equal(lastChannelState, currentChannelState)) {
                     if (currentChannelState.preview.index === config.lowerThirds.previewKeyIndex) {
                         await atemConsole.changePreviewInput(lastChannelState.preview.index);
-                        await atemConsole.macroRun(0);
+                        await atemConsole.macroRun(config.lowerThirds.macroIndex);
 
                         // if (!isMacroRunning) {
                         //     isMacroRunning = true;
