@@ -34,6 +34,7 @@
         "dev": "yarn prebuild && ts-node-dev --respawn --transpile-only ./src/index.ts",
         "build": "tsc && yarn copy-statics",
         "prod": "yarn build && cd ../frontend && yarn build && cd ../backend && cross-env NODE_ENV=production node ./built/src/index.js",
+	"prodlight": "yarn build && cross-env NODE_ENV=production node ./built/src/index.js",
         "runprod": "cross-env NODE_ENV=production node ./built/src/index.js"
     }
 }

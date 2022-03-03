@@ -4,7 +4,8 @@
     "main": "index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "prod": "cd backend && yarn prod"
+        "prod": "cd backend && yarn prod",
+	"prodlight": "cd backend && yarn prodlight"
     },
     "repository": {
         "type": "git",
